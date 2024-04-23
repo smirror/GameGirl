@@ -5,7 +5,7 @@
 - [gbdev/awesome-gbdev](https://github.com/gbdev/awesome-gbdev)
 
 ## src
-- [tanakh/tgbr](htttps://github.com/tanakh/tgbr)
+- [tanakh/tgbr](https://github.com/tanakh/tgbr)
 - [akatsuki105/worldwide](https://github.com/akatsuki105/worldwide)
 - [mohanson/dwangb](https://github.com/akashin/dwangb)
 
