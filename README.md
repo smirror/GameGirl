@@ -26,8 +26,15 @@
 - [akatsuki105/worldwide](https://github.com/akatsuki105/worldwide)
 - [mohanson/dwangb](https://github.com/akashin/dwangb)
 
-
-## ROM
+## test ROM
 
 - [gitendo/helloworld](https://github.com/gitendo/helloworld)
+- [Blargg’s test roms](https://gbdev.gg8.se/files/roms/blargg-gb-tests/) (テストROM): 各種資料を参考にエミュレータを実装していっても，本当に正しく実装
+  できているのかわからないという問題がある．テストROMを使うことにより， エミュレータの動作を自動的に検証できる．
+  テストROMは実機で通ることが確認されているため，ドキュメントよりも信頼できる． Blargg’s test
+  romsには複数のROMが含まれているが，中でも命令の動作をテスト するcpu_instrsと，命令のクロック数をテストするinstr_timingは通らないと，
+  実際のゲームは動かないと思う．逆に言えば，他のテストは通らなくても何とかなる．
 
+## Blog
+
+- [ゲームボーイのエミュレータを自作した話](https://keichi.dev/post/write-yourself-a-game-boy-emulator/)
