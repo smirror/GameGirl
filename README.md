@@ -38,3 +38,9 @@
 ## Blog
 
 - [ゲームボーイのエミュレータを自作した話](https://keichi.dev/post/write-yourself-a-game-boy-emulator/)
+- [ゲームボーイを作る（１）](https://www.tech-diningyo.info/entry/2021/07/10/222140)
+- [ゲームボーイのエミュレータをGoで作った話](https://zenn.dev/akatsuki/articles/ec95ab95f0e89ea8c38f)
+- [C++でゲームボーイエミュレータを自作しています](https://voidproc.com/blog/archives/664)
+- [脱・初級者のための自作GBエミュレータ開発](https://www.docswell.com/s/linoscope/ZNRRXL-game-boy-emulator-ocaml)
+- [OCaml でゲームボーイエミュレータを書いた話](https://qiita.com/linoscope/items/244d931aaae07df2c27e)
+- [Rubyでゲームボーイのエミュレータを作った](https://zenn.dev/sacckey/articles/05b6eb6ea89662)
