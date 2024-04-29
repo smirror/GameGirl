@@ -4,8 +4,7 @@
 
 ### Docs
 
-- [Pandocs](http://gbdev.gg8.se/wiki/articles/Pan_Docs)
-    - [Original](http://marc.rawer.de/Gameboy/Docs) (but not updated)
+- [Pandocs](https://gbdev.io/pandocs/)
 - [Gameboy CPU (LR35902) instruction set](http://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html):
   ゲームボーイのCPU (LR35902) の全命令をまとめた表． 一覧性が高く，オペランドのフォーマットや命令のクロック数も記載されているため，
   命令デコーダの作成に重宝する．ただし，一部のクロック数は間違っているという罠がある．
