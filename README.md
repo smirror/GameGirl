@@ -12,12 +12,13 @@
   上の表よりも詳しい．ただし，一部の命令 (DAA命令など) の動作はこの資料でもまだ情報が足りないため，他の資料をあたることになる．
 - [gbdev/awesome-gbdev](https://github.com/gbdev/awesome-gbdev)
 - [akatsuki105/gb-docs-ja](https://github.com/akatsuki105/gb-docs-ja)
-- [Gameboy CPU (LR35902) instruction set](https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html)：オペコード一覧表。CPUの実装はここを見ながらすることになりますが、たまに間違っています。
-- [Game Boy Programming Manual](https://web.archive.org/web/20150513170240/http://www.chrisantonellis.com:80/files/gameboy/gb-programming-manual.pdf)：Nintendo in Americaが出した（？）公式の（？）仕様書。細かい処理などを確認するときに便利です。
+- [Game Boy Programming Manual](https://web.archive.org/web/20150513170240/http://www.chrisantonellis.com:80/files/gameboy/gb-programming-manual.pdf)
+  ：Nintendo in Americaが出した（？）公式の（？）仕様書。細かい処理などを確認するときに便利です。
+- [Game Boy: Complete Technical Reference](https://gekkio.fi/files/gb-docs/gbctr.pdf)
 
-## src
+### src
 
-### Rust
+#### Rust
 
 - [tanakh/tgbr](https://github.com/tanakh/tgbr)
 - [keichi/gbr](https://github.com/keichi/gbr)
@@ -27,23 +28,15 @@
 - [akatsuki105/worldwide](https://github.com/akatsuki105/worldwide)
 - [mohanson/dwangb](https://github.com/akashin/dwangb)
 
-### Ruby
+#### Ruby
+
 - [sacckey/rubyboy](https://github.com/sacckey/rubyboy)
 
-## test ROM
+### ROM
 
-- [gitendo/helloworld](https://github.com/gitendo/helloworld)
-- [Blargg’s test roms](https://gbdev.gg8.se/files/roms/blargg-gb-tests/) (テストROM): 各種資料を参考にエミュレータを実装していっても，本当に正しく実装
-  できているのかわからないという問題がある．テストROMを使うことにより， エミュレータの動作を自動的に検証できる．
-  テストROMは実機で通ることが確認されているため，ドキュメントよりも信頼できる． Blargg’s test
-  romsには複数のROMが含まれているが，中でも命令の動作をテスト するcpu_instrsと，命令のクロック数をテストするinstr_timingは通らないと，
-  実際のゲームは動かないと思う．逆に言えば，他のテストは通らなくても何とかなる．
-- [tobu tobu girl](https://github.com/SimonLarsen/tobutobugirl)
-- [Mooneye Test Suite](https://github.com/Gekkio/mooneye-test-suite)
-  - build files: https://gekkio.fi/files/mooneye-test-suite/
-- 
+[roms](https//github.com/smirror/GameGirl/tree/main/roms)
 
-## Blog
+### Blog
 
 - [ゲームボーイのエミュレータを自作した話](https://keichi.dev/post/write-yourself-a-game-boy-emulator/)
 - [ゲームボーイを作る（１）](https://www.tech-diningyo.info/entry/2021/07/10/222140)
@@ -54,3 +47,5 @@
 - [Rubyでゲームボーイのエミュレータを作った](https://zenn.dev/sacckey/articles/05b6eb6ea89662)
 - [脱・初級者のための自作GBエミュレータ開発](https://www.docswell.com/s/linoscope/ZNRRXL-game-boy-emulator-ocaml)
 - [AQBoy: Yet Another Game Boy Emulator 開発記](https://hackmd.io/@anqou/HJcvRrwy9)
+- [GameBoy Emulation in JavaScript](https://imrannazar.com/series/gameboy-emulation-in-javascript)
+- [自作ゲームボーイエミュレータメモ](https://qiita.com/kmtoki/items/578e8e57ab0e76590d6d)
