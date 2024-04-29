@@ -39,6 +39,9 @@
   romsには複数のROMが含まれているが，中でも命令の動作をテスト するcpu_instrsと，命令のクロック数をテストするinstr_timingは通らないと，
   実際のゲームは動かないと思う．逆に言えば，他のテストは通らなくても何とかなる．
 - [tobu tobu girl](https://github.com/SimonLarsen/tobutobugirl)
+- [Mooneye Test Suite](https://github.com/Gekkio/mooneye-test-suite)
+  - build files: https://gekkio.fi/files/mooneye-test-suite/
+- 
 
 ## Blog
 
