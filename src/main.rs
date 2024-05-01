@@ -62,6 +62,6 @@ fn main() {
 
     let rom = load_rom(file);
 
-    // read ROM data
-    println!("{:?}", rom.get_buf());
+    // debug: read ROM data
+    log::debug!("ROM data: {:?}", rom.get_buf());
 }
