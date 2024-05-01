@@ -1,8 +1,20 @@
+# 'docs' フォルダ内またはそのサブフォルダ内の変更に 'Documentation' ラベルを追加
 documentation:
-  - "**/*.md"
-  - "docs/**/*"
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**'
+          - '**/*.md'
+
+# 'Cargo.toml' ファイルに変更があった場合、'dependencies' ラベルを追加
 dependencies:
-  - "**/Cargo.toml"
+  - changed-files:
+      - any-glob-to-any-file:
+        - "**/Cargo.toml"
+
+# 'src' フォルダ内またはそのサブフォルダ内の変更に 'enhancement' ラベルを追加
 enhancement:
-  - "src/**/*.rs"
-  - ".github/**/*.yml"
+  - changed-files:
+      - any-glob-to-any-file:
+        - "src/**/*.rs"
+        - ".github/**/*.yml"
+  - head-branch: [ '^feature', 'feature' ]
