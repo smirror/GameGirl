@@ -5,4 +5,6 @@ documentation:
   - "docs/**/*"
   - "website/**/*"
 dependencies:
-  - "**/go.mod"
+  - "**/Cargo.toml"
+enhancement:
+  - "src/**/*.rs"
