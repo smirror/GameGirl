@@ -1,7 +1,6 @@
 documentation:
   - "**/*.md"
   - "docs/**/*"
-  - "website/**/*"
 dependencies:
   - "**/Cargo.toml"
 enhancement:
