@@ -21,15 +21,7 @@ mod rom;
 // }
 
 // ROM file path
-fn rom_file_path() -> String {
-    let args: Vec<String> = env::args().collect();
-    // check if file path is provided
-    if args.len() < 2 {
-        panic!("Please provide a ROM file")
-    }
-
-    let file_path = &args[1];
-
+fn rom_file_path(file_path: &str) -> String {
     // check if file is a .gb or .gbc file
     if !file_path.ends_with(".gb") && !file_path.ends_with(".gbc") {
         panic!("Invalid file format. Only .gb and .gbc files are supported")
@@ -50,6 +42,16 @@ fn load_rom(file: String) -> rom::ROM {
     let data = fs::read(file).expect("Unable to read file");
     rom::ROM::new(data)
 }
+fn rom_check() -> String {
+    // check if file path is provided
+    let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        panic!("Please provide a ROM file")
+    }
+
+    // Read Rom file
+    args[1].to_string()
+}
 
 fn main() {
     // Set the log level to debug
@@ -57,11 +59,26 @@ fn main() {
     env_logger::init();
 
     // Read Rom data
-    let file = rom_file_path();
+    let file_path = rom_check();
+
+    let file = rom_file_path(&file_path);
     log::info!("Loading ROM file: {}", file);
 
     let rom = load_rom(file);
 
     // debug: read ROM data
     log::debug!("ROM data: {:?}", rom.get_buf());
+}
+
+#[test]
+fn test_rom_file_path() {
+    let file = rom_file_path("roms/hello-world/hello-world.gb");
+    assert_eq!(file, "roms/hello-world/hello-world.gb");
+}
+
+#[test]
+fn test_load_rom() {
+    let file = rom_file_path("roms/hello-world/hello-world.gb");
+    let rom = load_rom(file);
+    assert_eq!(rom.read(0x100), 195);
 }
