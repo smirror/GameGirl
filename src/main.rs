@@ -20,19 +20,8 @@ mod rom;
 //     timer: timer,
 // }
 
-fn rom_check() -> String {
-    // check if file path is provided
-    let args: Vec<String> = env::args().collect();
-    if args.len() < 2 {
-        panic!("Please provide a ROM file")
-    }
-
-    // Read Rom file
-    args[1].to_string()
-}
-
 // ROM file path
-fn rom_file_path(file_path: &str) -> String {
+fn check_rom_file_path(file_path: &str) -> String {
     // check if file exists
     if !fs::metadata(&file_path).is_ok() {
         panic!("File does not exist")
@@ -58,8 +47,17 @@ fn main() {
     env::set_var("RUST_LOG", "debug");
     env_logger::init();
 
-    // Read Rom data
-    let file = rom_file_path(&rom_check());
+    // check if file path is provided
+    let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        panic!("Please provide a ROM file")
+    }
+
+    // Read Rom file
+    let file_path = &args[1];
+
+    // load Rom data
+    let file = check_rom_file_path(file_path);
     log::info!("Loading ROM file: {}", file);
 
     let rom = load_rom(file);
@@ -69,20 +67,34 @@ fn main() {
 }
 
 #[cfg(test)]
-fn test_rom_file_path() {
-    let file = rom_file_path("roms/hello-world/hello-world.gb");
-    assert_eq!(file, "roms/hello-world/hello-world.gb");
+mod tests {
+    use super::*;
 
-    let file = rom_file_path("roms/hello-world/hello-world.gbc");
-    assert_eq!(file, "File does not exist");
+    #[test]
+    fn rom_file_path_returns_provided_file_path() {
+        let file_path = "roms/hello-world/hello-world.gb";
+        let result = check_rom_file_path(file_path);
+        assert_eq!(result, file_path);
+    }
 
-    let file = rom_file_path("roms/hello-world/hello-world.txt");
-    assert_eq!(file, "Invalid file format. Only .gb and .gbc files are supported");
-}
+    #[test]
+    #[should_panic(expected = "File does not exist")]
+    fn rom_file_path_panics_when_file_does_not_exist() {
+        let file_path = "nonexistent.gb";
+        check_rom_file_path(file_path);
+    }
 
-#[cfg(test)]
-fn test_load_rom() {
-    let file = rom_file_path("roms/hello-world/hello-world.gb");
-    let rom = load_rom(file);
-    assert_eq!(rom.read(0x100), 195);
+    #[test]
+    #[should_panic(expected = "Invalid file format. Only .gb and .gbc files are supported")]
+    fn rom_file_path_panics_when_file_is_not_gb_or_gbc() {
+        let file_path = "src/main.rs";
+        check_rom_file_path(file_path);
+    }
+
+    #[test]
+    fn load_rom_returns_rom_with_correct_data() {
+        let file = "roms/hello-world/hello-world.gb";
+        let rom = load_rom(file.to_string());
+        assert_eq!(rom.read(0x100), 195);
+    }
 }
