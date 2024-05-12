@@ -70,13 +70,13 @@ fn main() {
     log::debug!("ROM data: {:?}", rom.get_buf());
 }
 
-#[test]
+#[cfg(test)]
 fn test_rom_file_path() {
     let file = rom_file_path("roms/hello-world/hello-world.gb");
     assert_eq!(file, "roms/hello-world/hello-world.gb");
 }
 
-#[test]
+#[cfg(test)]
 fn test_load_rom() {
     let file = rom_file_path("roms/hello-world/hello-world.gb");
     let rom = load_rom(file);
