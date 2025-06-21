@@ -50,7 +50,8 @@ fn main() {
     // check if file path is provided
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
-        panic!("Please provide a ROM file")
+        eprintln!("Usage: {} <rom.gb|rom.gbc>", args[0]);
+        return;
     }
 
     // Read Rom file
