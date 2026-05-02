@@ -140,7 +140,7 @@ Minimum tests:
 - Unusable range reads `0xFF` and ignores writes.
 - I/O, HRAM, and IE read/write behavior is covered.
 
-Do not build a ROM execution harness in Phase 1. Save blargg/mooneye execution and pass/fail signaling for Phase 4.
+Do not build a ROM execution harness in Phase 1. Save minimal serial pass/fail signaling and deterministic ROM timeouts for inserted Phase 2.1, and broader blargg/mooneye validation expansion for Phase 4.
 
 ## Verification Commands
 
@@ -173,4 +173,3 @@ Residual risk:
 
 - Phase 1 does not validate Nintendo logo or header checksum as hard gates.
 - Phase 1 does not prove broad ROM compatibility because CPU execution and ROM harnessing are deferred.
-

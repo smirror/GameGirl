@@ -38,7 +38,7 @@ This phase does **not** execute CPU instructions, run ROM test suites, implement
 ### Testing Boundary
 - **D-15:** Add tests during Phase 1. Minimum coverage should include cartridge byte loading/parsing, unsupported and invalid input errors, ROM-only reads, Bus read/write behavior for representative ranges, Echo RAM mirror behavior, unusable range behavior, HRAM, I/O storage, and IE.
 - **D-16:** Prefer in-memory ROM byte fixtures for unit tests. Use checked-in ROM files only for lightweight smoke tests if they help, not as a full ROM execution harness.
-- **D-17:** Defer blargg/mooneye execution, serial pass/fail detection, and deterministic ROM timeouts to Phase 4.
+- **D-17:** Defer minimal serial pass/fail capture and deterministic ROM timeouts to inserted Phase 2.1; defer broader blargg/mooneye expansion to Phase 4.
 
 ### the agent's Discretion
 - Exact Rust module names and file splits inside the locked boundary.
@@ -106,7 +106,8 @@ This phase does **not** execute CPU instructions, run ROM test suites, implement
 
 - CPU fetch/decode/execute and cycle reporting — Phase 2.
 - Timer and interrupt semantics — Phase 3.
-- ROM execution harness and pass/fail detection — Phase 4.
+- Minimal ROM execution harness and serial pass/fail detection — Phase 2.1.
+- Broader blargg/mooneye validation expansion — Phase 4.
 - PPU mode access restrictions and VBlank/LCD interrupt hooks — Phase 5.
 - Background/window/sprite rendering, Joypad, broader MBC support, save RAM, APU, desktop UI, and CGB behavior — v2 requirements or later phases.
 

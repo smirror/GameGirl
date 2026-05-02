@@ -54,7 +54,7 @@
 |--------|-------------|----------|
 | Unit tests only | Simple, but may miss CLI/core integration problems | |
 | Unit plus focused integration tests | Covers cartridge parsing, errors, and Bus ranges without starting ROM execution harness work | ✓ |
-| Start ROM harness now | Valuable but belongs to Phase 4 after execution foundations exist | |
+| Start ROM harness now | Valuable, but minimal serial ROM harness now belongs to inserted Phase 2.1 after CPU foundation; broader blargg/mooneye expansion remains Phase 4 | |
 
 **User's choice:** Runtime fallback selected the recommended option because the interactive question tool is unavailable in this mode.
 **Notes:** Tests should use in-memory byte fixtures first; checked-in ROM files are optional smoke inputs, not Phase 1 pass/fail execution.

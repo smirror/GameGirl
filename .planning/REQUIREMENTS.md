@@ -13,6 +13,7 @@ Requirements for the initial emulator-core milestone. Each maps to roadmap phase
 - [ ] **CART-02**: User receives a clear error when the ROM path is missing, unreadable, too short for a header, or invalid.
 - [ ] **CART-03**: Emulator can parse cartridge header fields needed for planning execution: title, cartridge type, ROM size, RAM size, and entry/header region.
 - [ ] **CART-04**: Emulator can construct a ROM-only cartridge representation that supports reads from fixed ROM address ranges.
+- [ ] **CART-05**: Non-ROM-only cartridge types are parsed far enough to report their type, then return `UnsupportedCartridgeType` until MBC support is added.
 
 ### Bus
 
@@ -20,6 +21,10 @@ Requirements for the initial emulator-core milestone. Each maps to roadmap phase
 - [ ] **BUS-02**: Bus routes reads for cartridge ROM, work RAM, high RAM, interrupt enable, and basic I/O register ranges.
 - [ ] **BUS-03**: Bus routes writes for writable memory and I/O registers without letting CPU instruction code bypass the Bus.
 - [ ] **BUS-04**: Bus behavior is covered by tests for representative address ranges and invalid/unusable ranges.
+
+### Boot Model
+
+- [ ] **BOOT-01**: v1.0 starts from documented post-boot DMG state, including `PC = 0x0100`, and does not emulate the Nintendo boot ROM.
 
 ### CPU
 
@@ -38,11 +43,16 @@ Requirements for the initial emulator-core milestone. Each maps to roadmap phase
 - [ ] **INT-01**: Emulator models `IE`, `IF`, and CPU-internal `IME`, including delayed `ei` behavior.
 - [ ] **INT-02**: CPU can service enabled interrupts by clearing `IME`, clearing the requested `IF` bit, pushing `PC`, and jumping to the correct vector.
 
+### Serial
+
+- [ ] **SERIAL-01**: Emulator captures test ROM serial output through `SB` (`0xFF01`) and `SC` (`0xFF02`) by appending `SB` to a test buffer when `SC == 0x81`, without claiming full link-cable accuracy.
+
 ### Validation
 
 - [ ] **TEST-01**: Cargo tests cover cartridge parsing, Bus address routing, CPU flags/instructions, timer behavior, and interrupt behavior introduced in v1.
-- [ ] **TEST-02**: Emulator has a ROM test harness that can run at least one checked-in blargg or mooneye ROM with a deterministic timeout.
+- [ ] **TEST-02**: Emulator has a ROM test harness that can run at least one checked-in `.gb` fixture, custom or known-test, with a deterministic timeout.
 - [ ] **TEST-03**: ROM harness can report pass/fail through a documented signal such as serial output or debug-break behavior.
+- [ ] **TEST-04**: Expanded ROM validation can run selected blargg or mooneye ROMs matched to implemented CPU/timer/interrupt capability, with documented expectations.
 
 ### PPU
 
@@ -105,33 +115,37 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CART-02 | Phase 1 | Pending |
 | CART-03 | Phase 1 | Pending |
 | CART-04 | Phase 1 | Pending |
+| CART-05 | Phase 1 | Pending |
 | BUS-01 | Phase 1 | Pending |
 | BUS-02 | Phase 1 | Pending |
 | BUS-03 | Phase 1 | Pending |
 | BUS-04 | Phase 1 | Pending |
+| BOOT-01 | Phase 2 | Pending |
 | CPU-01 | Phase 2 | Pending |
 | CPU-02 | Phase 2 | Pending |
 | CPU-03 | Phase 2 | Pending |
 | CPU-04 | Phase 2 | Pending |
 | CPU-05 | Phase 2 | Pending |
 | CPU-06 | Phase 2 | Pending |
+| SERIAL-01 | Phase 2.1 | Pending |
 | TIME-01 | Phase 3 | Pending |
 | TIME-02 | Phase 3 | Pending |
 | TIME-03 | Phase 3 | Pending |
 | INT-01 | Phase 3 | Pending |
 | INT-02 | Phase 3 | Pending |
 | TEST-01 | Phase 4 | Pending |
-| TEST-02 | Phase 4 | Pending |
-| TEST-03 | Phase 4 | Pending |
+| TEST-02 | Phase 2.1 | Pending |
+| TEST-03 | Phase 2.1 | Pending |
+| TEST-04 | Phase 4 | Pending |
 | PPU-01 | Phase 5 | Pending |
 | PPU-02 | Phase 5 | Pending |
 | PPU-03 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 25 total
-- Mapped to phases: 25
+- v1 requirements: 29 total
+- Mapped to phases: 29
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-02*
-*Last updated: 2026-05-02 after roadmap traceability mapping*
+*Last updated: 2026-05-02 after roadmap feedback insertion*

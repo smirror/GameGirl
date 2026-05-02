@@ -23,7 +23,9 @@ GameGirl must execute DMG Game Boy ROMs accurately enough that behavior is drive
 
 - [ ] Load cartridge files as binary data and parse enough header metadata to identify the ROM and initial cartridge behavior
 - [ ] Define a DMG memory bus with 16-bit addressing and 8-bit read/write access
-- [ ] Implement CPU register state, instruction fetch/decode/execute flow, flags, stack behavior, and core instruction groups
+- [ ] Start execution from documented post-boot DMG state rather than emulating the Nintendo boot ROM in v1.0
+- [ ] Implement CPU register state, instruction fetch/decode/execute flow, flags, stack behavior, and staged core instruction groups
+- [ ] Capture minimal serial output from `FF01`/`FF02` so ROM fixtures can report test results early
 - [ ] Add timer and interrupt state using hardware-oriented timing rules, including delayed interrupt enable behavior
 - [ ] Introduce PPU mode timing and VRAM/OAM access restrictions before full rendering
 - [ ] Run automated checks against local blargg and mooneye ROM fixtures as emulator capabilities appear
@@ -34,6 +36,7 @@ GameGirl must execute DMG Game Boy ROMs accurately enough that behavior is drive
 - Full audio output — defer until CPU, bus, timer, interrupts, PPU timing, and basic cartridge execution are grounded
 - Polished desktop UI — defer until the emulator core can run meaningful ROMs
 - Broad MBC coverage beyond the first cartridge path — start with the simplest supported cartridge behavior before expanding
+- Nintendo boot ROM emulation in v1.0 — start from documented post-boot DMG state and make the assumption explicit
 - Cycle-perfect edge cases everywhere in the first milestone — capture architecture that can support precision, then tighten with tests
 
 ## Context
@@ -62,6 +65,8 @@ GameGirl must execute DMG Game Boy ROMs accurately enough that behavior is drive
 | Build around a Bus abstraction | CPU-visible memory behavior spans cartridge, RAM, timer, PPU, joypad, interrupts, and later audio | — Pending |
 | Replace text ROM loading with byte loading before emulator work | Game Boy ROMs are binary files and the current UTF-8 path is only a placeholder | — Pending |
 | Use blargg/mooneye ROMs for milestone validation | Emulator correctness depends on edge cases that ordinary demos can miss | — Pending |
+| Insert a minimal serial ROM harness before timer/interrupt work | CPU changes should encounter ROM-style failures early instead of waiting for a broad validation phase | — Pending |
+| Skip Nintendo boot ROM emulation in v1.0 | Starting at documented post-boot DMG state keeps the first milestone focused and aligns CPU defaults around `PC = 0x0100` | — Pending |
 
 ## Evolution
 
@@ -81,4 +86,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-02 after initialization*
+*Last updated: 2026-05-02 after roadmap feedback insertion*
