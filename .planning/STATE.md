@@ -1,20 +1,20 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: Emulator Core Foundation
-current_phase: 2
-current_phase_name: CPU Core Foundation
+milestone: v1.1
+milestone_name: Hardware-Accurate Core Architecture
+current_phase: 6
+current_phase_name: cartridge-header-and-mapper-boundary
 current_plan: Not started
 status: ready_to_plan
-stopped_at: Completed Phase 1
-last_updated: "2026-05-02T03:09:32Z"
-last_activity: "2026-05-02 - Completed Phase 1: Cartridge and Bus Foundation"
+stopped_at: Completed 02-05-PLAN.md
+last_updated: "2026-05-02T05:50:18Z"
+last_activity: 2026-05-02 - Completed quick task 260502-kf6: Refactor CPU readability, split tests, centralize memory map constants, and clean ROM loading API
 progress:
-  total_phases: 6
-  completed_phases: 1
-  total_plans: 18
-  completed_plans: 3
-  percent: 17
+  total_phases: 5
+  completed_phases: 0
+  total_plans: 32
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -24,42 +24,31 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-02)
 
 **Core value:** GameGirl must execute DMG Game Boy ROMs accurately enough that behavior is driven by hardware rules and verified by known test ROMs, not by ad hoc demo success.
-**Current focus:** Phase 2: CPU Core Foundation
+**Current focus:** Phase 6 — cartridge-header-and-mapper-boundary
 
 ## Current Position
 
-Current Phase: 2
-Current Phase Name: CPU Core Foundation
-Total Phases: 6
-Current Plan: Not started
-Total Plans in Phase: 5
-Status: Ready to plan
-Last activity: 2026-05-02
-Last Activity Description: Phase 1 completed with binary cartridge loading, ROM-only cartridge metadata/reads, and Bus address routing verified; ready to discuss or plan Phase 2 CPU core foundation.
-
-Phase: 2 of 6 (CPU Core Foundation)
+Phase: 6 (cartridge-header-and-mapper-boundary) — READY TO PLAN
 Plan: Not started
-
-Progress: [##        ] 17%
+Status: Ready to plan
+Last activity: 2026-05-02 - Completed quick task 260502-kf6: Refactor CPU readability, split tests, centralize memory map constants, and clean ROM loading API
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 3
+- Total plans completed: 0
 - Average duration: n/a
 - Total execution time: 0 hours
 
 **By Phase:**
 
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 01 | 3 | - | - |
+No v1.1 plans completed yet.
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01, 01-02, 01-03
-- Trend: Phase 1 complete; next work is Phase 2 planning
+- Last 5 plans: none in v1.1 yet
+- Trend: Milestone v1.1 roadmap expanded from 17 to 32 smaller plans; next work is Phase 6 planning
 
 ## Accumulated Context
 
@@ -85,6 +74,9 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260502-gih | Incorporate roadmap feedback: insert early minimal serial ROM validation harness, narrow CPU phase scope, and clarify ROM-only/MBC and post-boot assumptions | 2026-05-02 | docs-only | [260502-gih-incorporate-roadmap-feedback-insert-earl](./quick/260502-gih-incorporate-roadmap-feedback-insert-earl/) |
+| 260502-id3 | Fix ROM loading verification script and CI failure for cartridge type coverage | 2026-05-02 | working-tree | [260502-id3-fix-rom-loading-verification-script-and-](./quick/260502-id3-fix-rom-loading-verification-script-and-/) |
+| 260502-ipc | Update roadmap for known cartridge type recognition and staged MBC support | 2026-05-02 | working-tree | [260502-ipc-update-roadmap-for-known-cartridge-type-](./quick/260502-ipc-update-roadmap-for-known-cartridge-type-/) |
+| 260502-kf6 | Refactor CPU readability, split tests, centralize memory map constants, and clean ROM loading API | 2026-05-02 | 345b1a2 | [260502-kf6-refactor-cpu-readability-split-tests-cen](./quick/260502-kf6-refactor-cpu-readability-split-tests-cen/) |
 
 ## Deferred Items
 
@@ -99,6 +91,6 @@ Items acknowledged and carried forward from initialization:
 
 ## Session Continuity
 
-Last session: 2026-05-02T03:09:32Z
-Stopped at: Completed Phase 1
+Last session: 2026-05-02T04:42:31.787Z
+Stopped at: Completed 02-05-PLAN.md
 Resume file: None

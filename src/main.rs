@@ -2,7 +2,7 @@ use std::env;
 use std::path::Path;
 use std::process::ExitCode;
 
-use game_girl::cartridge::{Cartridge, CartridgeHeader};
+use game_girl::cartridge::{load_rom_file, Cartridge, CartridgeHeader};
 
 fn main() -> ExitCode {
     let mut args = env::args();
@@ -18,13 +18,13 @@ fn main() -> ExitCode {
         return ExitCode::FAILURE;
     }
 
-    let bytes = match std::fs::read(&file_path) {
+    let bytes = match load_rom_file(&file_path) {
         Ok(bytes) => {
             println!("Loaded ROM: {} bytes", bytes.len());
             bytes
         }
         Err(error) => {
-            eprintln!("could not read ROM '{file_path}': {error}");
+            eprintln!("{error}");
             return ExitCode::FAILURE;
         }
     };

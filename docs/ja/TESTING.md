@@ -44,6 +44,12 @@ cargo fmt --all -- --check
 cargo clippy --all-targets -- -D warnings
 ```
 
+同梱 ROM を CLI で読み込み・解析できるか確認:
+
+```bash
+scripts/verify_rom_loading.sh
+```
+
 ## 新しいテストを書くとき
 
 - pure module のテストは同じ source file の `#[cfg(test)] mod tests` に置きます。
@@ -56,9 +62,9 @@ cargo clippy --all-targets -- -D warnings
 
 | 領域 | ファイル | カバー範囲 |
 |------|----------|------------|
-| Cartridge validation と metadata | `src/cartridge.rs` | ヘッダー長、タイトル解析、ROM/RAM size code、未対応 type code、ROM-only read/write。 |
+| Cartridge validation と metadata | `src/cartridge.rs` | ヘッダー長、タイトル解析、ROM/RAM size code、既知/未知 type code、固定 ROM read/write。 |
 | Bus routing | `src/bus.rs` | ROM delegation、WRAM/Echo RAM mirror、OAM、I/O、HRAM、IE、未使用領域、未マップ領域。 |
-| CLI behavior | `tests/cli.rs` | valid ROM load、`.GBC` 拡張子、引数なし、不正拡張子、missing file、短すぎる ROM、未対応 cartridge type でも header を表示すること。 |
+| CLI behavior | `tests/cli.rs` | valid ROM load、known MBC type load、`.GBC` 拡張子、引数なし、不正拡張子、missing file、短すぎる ROM、未対応 cartridge type でも header を表示すること。 |
 
 ## Coverage 要件
 
@@ -68,8 +74,8 @@ coverage threshold は設定されていません。`tarpaulin`、`llvm-cov`、`
 
 | Workflow | Trigger | テスト関連の挙動 |
 |----------|---------|------------------|
-| `.github/workflows/rust.yml` | `main` への push / pull request で `src/` 配下の Rust source が変わったとき | `cargo fmt --all`、`cargo clippy`、`cargo test --verbose` を実行します。 |
+| `.github/workflows/rust.yml` | `main` への push / pull request で Rust source、tests、scripts、workflow、Cargo metadata、同梱 ROM が変わったとき | `cargo fmt --all`、`cargo clippy`、`cargo test --verbose`、`cargo build`、`scripts/verify_rom_loading.sh` を実行します。 |
 | `.github/workflows/rust-clippy.yml` | push、pull request、月次 schedule | stable Rust toolchain と clippy を入れ、SARIF 結果を upload します。 |
 | `.github/workflows/dependency-review.yml` | `main` への pull request | `actions/dependency-review-action@v4` を実行します。 |
 
-`roms/blargg-gb-tests/`、`roms/mooneye/`、`roms/hello-world/` は将来の emulator validation 用に同梱されています。ただし、多くの ROM はまだ自動テストには接続されていません。
+`roms/blargg-gb-tests/`、`roms/mooneye/`、`roms/hello-world/` は CI で loadability を確認します。これらの ROM に対する emulator behavior の pass/fail 判定は今後の実装対象です。

@@ -3,6 +3,8 @@ use std::path::PathBuf;
 use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use game_girl::memory_map::CARTRIDGE_ROM_SIZE;
+
 fn cli_path() -> &'static str {
     env!("CARGO_BIN_EXE_game_girl")
 }
@@ -22,7 +24,7 @@ fn temp_path(file_name: &str) -> PathBuf {
 }
 
 fn rom_only_bytes() -> Vec<u8> {
-    let mut bytes = vec![0; 0x8000];
+    let mut bytes = vec![0; CARTRIDGE_ROM_SIZE];
     bytes[0x0134..0x0138].copy_from_slice(b"TEST");
     bytes[0x0147] = 0x00;
     bytes[0x0148] = 0x00;
@@ -60,7 +62,7 @@ fn loads_valid_gb_rom() {
 fn prints_header_before_rejecting_unsupported_cartridge_type() {
     let path = temp_path("unsupported.gb");
     let mut bytes = rom_only_bytes();
-    bytes[0x0147] = 0x01;
+    bytes[0x0147] = 0x04;
     fs::write(&path, bytes).expect("test ROM should be writable");
 
     let output = Command::new(cli_path())
@@ -72,15 +74,40 @@ fn prints_header_before_rejecting_unsupported_cartridge_type() {
 
     assert!(!output.status.success());
     assert!(
-        String::from_utf8_lossy(&output.stdout).contains("cartridge_type: Unsupported(1) (0x01)"),
+        String::from_utf8_lossy(&output.stdout).contains("cartridge_type: Unsupported(4) (0x04)"),
         "stdout should include parsed header, got: {}",
         String::from_utf8_lossy(&output.stdout)
     );
     assert!(
-        String::from_utf8_lossy(&output.stderr).contains("unsupported cartridge type: 0x01"),
+        String::from_utf8_lossy(&output.stderr).contains("unsupported cartridge type: 0x04"),
         "stderr should explain unsupported type, got: {}",
         String::from_utf8_lossy(&output.stderr)
     );
+}
+
+#[test]
+fn loads_known_mbc_cartridge_type() {
+    let path = temp_path("mbc1.gb");
+    let mut bytes = rom_only_bytes();
+    bytes[0x0147] = 0x03;
+    bytes[0x0149] = 0x02;
+    fs::write(&path, bytes).expect("test ROM should be writable");
+
+    let output = Command::new(cli_path())
+        .arg(&path)
+        .output()
+        .expect("CLI should run");
+
+    fs::remove_file(&path).ok();
+
+    assert!(
+        output.status.success(),
+        "expected success, stderr: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("cartridge_type: Mbc1RamBattery (0x03)"));
+    assert!(stdout.contains("ram_size: 8192 bytes (code 0x02)"));
 }
 
 #[test]

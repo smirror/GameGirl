@@ -1,122 +1,74 @@
-# Feature Research
+# v1.1 Feature Research: Hardware-Accurate Core Architecture
 
-**Domain:** Rust DMG Game Boy emulator
-**Researched:** 2026-05-02
-**Confidence:** HIGH
+## Table Stakes
 
-## Feature Landscape
+### Cartridge And Header Policy
 
-### Table Stakes (Users Expect These)
+- One load path should construct a validated `Cartridge`, not split raw-byte and cartridge construction paths.
+- Header parsing should distinguish hard validation from metadata:
+  - Header checksum is boot-critical when modeling real boot behavior.
+  - Global checksum is metadata/warning, not a normal boot blocker.
+- CGB flag handling should use header byte `0x0143`; file extension must not choose hardware mode.
+- CGB-only ROMs should be rejected while GameGirl is DMG-only.
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| Binary ROM loading | Emulator must consume `.gb` bytes, not text | LOW | Replace `read_to_string` with `fs::read`; parse header from `0x0100-0x014F` |
-| Cartridge header parsing | Needed to know title, ROM size, RAM size, and mapper type | MEDIUM | Pan Docs places cartridge header in the first ROM bank |
-| DMG memory map and bus | CPU-visible devices are selected by address | MEDIUM | Required before CPU can execute real ROM reads/writes |
-| CPU registers and fetch/decode/execute | Core of every emulator | HIGH | Start with register model and a small instruction subset |
-| CPU flags and stack behavior | Required for control flow and arithmetic correctness | HIGH | Small mistakes cascade into test failures |
-| Timer and interrupts | Many games and tests rely on timing and `IF`/`IE`/`IME` behavior | HIGH | Use internal counter model from the start |
-| ROM test harness | Existing fixtures need automated pass/fail checks | MEDIUM | Start with targeted unit tests, then ROM-level harness |
+### Mapper Boundary
 
-### Differentiators (Competitive Advantage)
+- `0000-7FFF` and `A000-BFFF` are cartridge-owned address ranges.
+- Writes to `0000-7FFF` are mapper control writes for MBC cartridges.
+- External RAM reads/writes must go through the mapper.
+- NoMbc should be implemented first; MBC1, MBC3, and MBC5 should follow as explicit controller implementations.
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| Test-ROM-driven milestones | Makes progress measurable and prevents demo-only correctness | MEDIUM | Use local blargg/mooneye assets as phase gates |
-| Clear hardware module boundaries | Makes future timing fixes safer | MEDIUM | Bus, CPU, cartridge, timer, interrupts, PPU, joypad |
-| DMG-first precision notes | Avoids mixing DMG/CGB behavior accidentally | LOW | Keep CGB decisions out of v1 requirements |
+### Full Address-Space Routing
 
-### Anti-Features (Commonly Requested, Often Problematic)
+- Bus/interconnect must route the full DMG CPU-visible address space:
+  - Cartridge ROM/control: `0000-7FFF`
+  - VRAM: `8000-9FFF`
+  - External cartridge RAM/RTC window: `A000-BFFF`
+  - WRAM and Echo RAM: `C000-FDFF`
+  - OAM and not-usable range: `FE00-FEFF`
+  - I/O registers: `FF00-FF7F`
+  - HRAM and IE: `FF80-FFFF`
 
-| Feature | Why Requested | Why Problematic | Alternative |
-|---------|---------------|-----------------|-------------|
-| Full UI first | It feels like a visible emulator quickly | Encourages drawing before execution correctness exists | Build core and tests first, add host UI later |
-| Implement all instructions in one giant pass | Seems faster than phased work | Hard to debug flags, cycles, and decode issues | Implement and test instruction families incrementally |
-| CGB support from day one | More complete emulator story | Adds banked VRAM/WRAM, palettes, speed switching, and model differences too early | Keep architecture extensible but scope v1 to DMG |
-| Audio early | Fun and visible | APU timing is its own complex subsystem | Defer until CPU/bus/timer/PPU foundations are stable |
+### Side-Effect-Aware MMIO
 
-## Feature Dependencies
+Key I/O registers need device handlers rather than plain byte storage:
 
-```text
-Binary ROM loading
-    requires -> Cartridge header parsing
-        requires -> Bus memory mapping
-            requires -> CPU fetch/decode/execute
-                requires -> Flags, stack, jumps, calls
-                    enhances -> ROM test harness
+- `FF00` joypad active-low matrix behavior.
+- `FF01/FF02` serial transfer request/completion behavior and test-output capture.
+- `FF04-FF07` timer/divider registers and write side effects.
+- `FF0F/FFFF` interrupt request/enable bits.
+- `FF46` OAM DMA start/progress behavior.
+- `FF50` boot ROM lock/unmap behavior.
 
-Timer and interrupt state
-    requires -> Bus I/O registers
-    enhances -> CPU test ROM compatibility
+### Boot Policy
 
-PPU mode timing
-    requires -> Bus memory mapping
-    enhances -> VRAM/OAM access correctness
-```
+- `SkipBootRom` should initialize CPU and MMIO to documented post-boot state.
+- `UseBootRom` should start at `0x0000`, map boot ROM over cartridge reads, and unmap via `FF50`.
+- Boot policy must be explicit in API/tests so post-boot defaults are not mixed with boot-ROM execution.
 
-### Dependency Notes
+### M-Cycle Progression
 
-- **ROM loading requires header parsing:** The emulator needs cartridge metadata before it can choose mapper behavior.
-- **Bus requires cartridge and memory regions:** CPU execution must read opcodes from the cartridge address space and write device registers through one boundary.
-- **Timer/interrupts require bus I/O registers:** `IF`, `IE`, `DIV`, `TIMA`, `TMA`, and `TAC` are memory-mapped.
-- **ROM harness depends on execution loop:** Test ROMs become useful once the CPU can step and expose pass/fail signals.
+- CPU instructions already return machine cycles; v1.1 should consume those cycles through a machine/interconnect tick loop.
+- Timer, serial, DMA, PPU mode skeleton, and interrupt hooks should advance from M-cycles rather than from ad hoc instruction counters.
 
-## MVP Definition
+### Validation Harness
 
-### Launch With (v1)
+- ROM harness should classify pass/fail/timeout deterministically.
+- Serial output should be usable as an early test ROM signal.
+- Test ROMs should be capability-gated so unsupported hardware is not mistaken for emulator regression.
 
-- [ ] Binary ROM byte loading and basic cartridge header parsing - real ROM input starts here
-- [ ] DMG bus and memory map skeleton - all hardware access needs one route
-- [ ] CPU registers and initial instruction execution loop - enables first executable behavior
-- [ ] Focused CPU instruction groups with unit tests - prevents a fragile giant opcode table
-- [ ] Timer/interrupt registers and initial timing model - required for meaningful tests
-- [ ] ROM test harness foundation - makes correctness observable
+## Differentiators
 
-### Add After Validation (v1.x)
+- Side-effect-free `peek8` for disassembly/debugging that cannot trigger MMIO actions.
+- Address-space tests that assert behavior by hardware region rather than by storage array implementation.
+- Mapper tests that document each controller's bank-zero and RAM-enable quirks as they are added.
 
-- [ ] PPU mode timing and VRAM/OAM restrictions - needed before rendering correctness
-- [ ] Background rendering - first visible output path
-- [ ] Joypad input - required for interactive games
-- [ ] MBC1/MBC3/MBC5 expansion - needed for wider ROM compatibility
+## Deferred
 
-### Future Consideration (v2+)
-
-- [ ] CGB support - defer until DMG path is stable
-- [ ] APU audio output - defer until core timing is stable
-- [ ] Desktop UI polish - defer until emulator core can run target ROMs
-
-## Feature Prioritization Matrix
-
-| Feature | User Value | Implementation Cost | Priority |
-|---------|------------|---------------------|----------|
-| Binary ROM loading | HIGH | LOW | P1 |
-| Cartridge header parsing | HIGH | MEDIUM | P1 |
-| Bus/memory map | HIGH | MEDIUM | P1 |
-| CPU registers and fetch/decode/execute | HIGH | HIGH | P1 |
-| CPU instruction families | HIGH | HIGH | P1 |
-| Timer and interrupts | HIGH | HIGH | P1 |
-| ROM harness | HIGH | MEDIUM | P1 |
-| PPU rendering | MEDIUM | HIGH | P2 |
-| Joypad | MEDIUM | MEDIUM | P2 |
-| APU | MEDIUM | HIGH | P3 |
-| CGB | MEDIUM | HIGH | P3 |
-
-## Competitor Feature Analysis
-
-| Feature | Reference Emulators | Test Suites | Our Approach |
-|---------|---------------------|-------------|--------------|
-| CPU correctness | Mature emulators implement instruction families and flags carefully | blargg CPU tests | Build small, tested instruction groups |
-| Timing correctness | Mature emulators model timer/interrupt quirks explicitly | mooneye acceptance tests | Use internal counter and phase gates |
-| Cartridge support | Mature emulators support many MBCs | mooneye emulator-only MBC tests | Start with simplest cartridge path, expand after bus is stable |
-
-## Sources
-
-- https://gbdev.io/pandocs/Memory_Map.html - cartridge header and memory map expectations
-- https://gbdev.io/pandocs/Interrupts.html - `IME`, `IE`, `IF`, and delayed `ei`
-- https://github.com/Gekkio/mooneye-test-suite - suite structure and pass/fail reporting
-- `docs/hot_to_proceed.md` - local implementation roadmap
-- `.planning/codebase/CONCERNS.md` - current gaps and risks
-
----
-*Feature research for: Rust DMG Game Boy emulator*
-*Researched: 2026-05-02*
+- Full CGB execution.
+- Pixel rendering.
+- Host UI.
+- APU/audio output.
+- RTC wall-clock persistence.
+- Battery save persistence.
+- Exotic cartridge hardware.
