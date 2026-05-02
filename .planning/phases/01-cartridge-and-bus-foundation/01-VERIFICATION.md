@@ -18,18 +18,18 @@ Passed. Phase 1 achieves its goal: the user can load ROM bytes into a cartridge 
 ## Automated Checks
 
 - `cargo fmt --all -- --check` passed.
-- `cargo test` passed with 17 tests.
+- `cargo test` passed with 23 tests: 17 core unit tests and 6 CLI integration tests.
 - `cargo test cartridge` passed with 11 cartridge tests.
 - `cargo test bus` passed with 6 Bus tests.
 - `cargo clippy -- -D warnings` passed.
-- CLI smoke checks covered valid ROM loading, invalid suffix, missing file, unreadable file, and too-short ROM behavior.
+- CLI integration tests cover valid ROM loading, case-insensitive `.gbc` handling, missing argument usage, invalid suffix, missing file, and too-short ROM behavior.
 
 ## Requirement Verification
 
 | Requirement | Status | Evidence |
 |-------------|--------|----------|
-| CART-01 | Passed | `src/main.rs` delegates to `game_girl::cartridge::load_rom_file`, which reads bytes through `std::fs::read`; hello-world ROM smoke check prints `Loaded ROM: 32768 bytes`. |
-| CART-02 | Passed | CLI returns non-zero errors for missing paths, unreadable files, invalid suffixes, and too-short ROMs; cartridge errors implement `Display`. |
+| CART-01 | Passed | `src/main.rs` delegates to `game_girl::cartridge::load_rom_file`, which reads bytes through `std::fs::read`; CLI integration tests assert valid ROM output. |
+| CART-02 | Passed | CLI integration tests assert non-zero errors for missing arguments, missing files, invalid suffixes, and too-short ROMs; cartridge errors implement `Display`. |
 | CART-03 | Passed | `CartridgeHeader` exposes title, cartridge type/code, ROM/RAM size/code, entry point, logo/header bytes, CGB flag, header checksum, and global checksum. |
 | CART-04 | Passed | `Cartridge::from_bytes` constructs ROM-only cartridges and `read_rom` covers fixed ROM range reads. |
 | CART-05 | Passed | Non-ROM-only type codes are parsed and returned as `UnsupportedCartridgeType(code)`. |
@@ -40,8 +40,8 @@ Passed. Phase 1 achieves its goal: the user can load ROM bytes into a cartridge 
 
 ## Success Criteria
 
-1. CLI with a `.gb` path reads binary bytes without UTF-8 assumptions: Passed.
-2. Clear errors for missing, unreadable, too-short, or invalid ROM inputs: Passed.
+1. CLI with a `.gb` path reads binary bytes without UTF-8 assumptions: Passed with integration coverage.
+2. Clear errors for missing, unreadable, too-short, or invalid ROM inputs: Passed with integration coverage.
 3. Cartridge header parsing exposes title, type, ROM size, RAM size, and entry/header data in tests: Passed.
 4. Non-ROM-only cartridge types report `UnsupportedCartridgeType`: Passed.
 5. Bus tests cover cartridge ROM, WRAM, HRAM, IE, I/O, and representative unusable ranges: Passed.
