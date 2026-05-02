@@ -47,9 +47,39 @@ fn loads_valid_gb_rom() {
         "expected success, stderr: {}",
         String::from_utf8_lossy(&output.stderr)
     );
-    assert_eq!(
-        String::from_utf8_lossy(&output.stdout).trim(),
-        "Loaded ROM: 32768 bytes"
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("Loaded ROM: 32768 bytes"));
+    assert!(stdout.contains("Header:"));
+    assert!(stdout.contains("title: TEST"));
+    assert!(stdout.contains("cartridge_type: RomOnly (0x00)"));
+    assert!(stdout.contains("rom_size: 32768 bytes (code 0x00)"));
+    assert!(stdout.contains("ram_size: 0 bytes (code 0x00)"));
+}
+
+#[test]
+fn prints_header_before_rejecting_unsupported_cartridge_type() {
+    let path = temp_path("unsupported.gb");
+    let mut bytes = rom_only_bytes();
+    bytes[0x0147] = 0x01;
+    fs::write(&path, bytes).expect("test ROM should be writable");
+
+    let output = Command::new(cli_path())
+        .arg(&path)
+        .output()
+        .expect("CLI should run");
+
+    fs::remove_file(&path).ok();
+
+    assert!(!output.status.success());
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains("cartridge_type: Unsupported(1) (0x01)"),
+        "stdout should include parsed header, got: {}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("unsupported cartridge type: 0x01"),
+        "stderr should explain unsupported type, got: {}",
+        String::from_utf8_lossy(&output.stderr)
     );
 }
 
