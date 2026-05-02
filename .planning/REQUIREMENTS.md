@@ -9,18 +9,18 @@ Requirements for the initial emulator-core milestone. Each maps to roadmap phase
 
 ### Cartridge
 
-- [ ] **CART-01**: User can provide a `.gb` or `.gbc` file path and the emulator reads the ROM as binary bytes.
-- [ ] **CART-02**: User receives a clear error when the ROM path is missing, unreadable, too short for a header, or invalid.
-- [ ] **CART-03**: Emulator can parse cartridge header fields needed for planning execution: title, cartridge type, ROM size, RAM size, and entry/header region.
-- [ ] **CART-04**: Emulator can construct a ROM-only cartridge representation that supports reads from fixed ROM address ranges.
-- [ ] **CART-05**: Non-ROM-only cartridge types are parsed far enough to report their type, then return `UnsupportedCartridgeType` until MBC support is added.
+- [x] **CART-01**: User can provide a `.gb` or `.gbc` file path and the emulator reads the ROM as binary bytes.
+- [x] **CART-02**: User receives a clear error when the ROM path is missing, unreadable, too short for a header, or invalid.
+- [x] **CART-03**: Emulator can parse cartridge header fields needed for planning execution: title, cartridge type, ROM size, RAM size, and entry/header region.
+- [x] **CART-04**: Emulator can construct a ROM-only cartridge representation that supports reads from fixed ROM address ranges.
+- [x] **CART-05**: Non-ROM-only cartridge types are parsed far enough to report their type, then return `UnsupportedCartridgeType` until MBC support is added.
 
 ### Bus
 
-- [ ] **BUS-01**: Emulator exposes a Bus API that can read and write 8-bit values through the 16-bit DMG address space.
-- [ ] **BUS-02**: Bus routes reads for cartridge ROM, work RAM, high RAM, interrupt enable, and basic I/O register ranges.
-- [ ] **BUS-03**: Bus routes writes for writable memory and I/O registers without letting CPU instruction code bypass the Bus.
-- [ ] **BUS-04**: Bus behavior is covered by tests for representative address ranges and invalid/unusable ranges.
+- [x] **BUS-01**: Emulator exposes a Bus API that can read and write 8-bit values through the 16-bit DMG address space.
+- [x] **BUS-02**: Bus routes reads for cartridge ROM, work RAM, high RAM, interrupt enable, and basic I/O register ranges.
+- [x] **BUS-03**: Bus routes writes for writable memory and I/O registers without letting CPU instruction code bypass the Bus.
+- [x] **BUS-04**: Bus behavior is covered by tests for representative address ranges and invalid/unusable ranges.
 
 ### Boot Model
 
@@ -111,15 +111,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CART-01 | Phase 1 | Pending |
-| CART-02 | Phase 1 | Pending |
-| CART-03 | Phase 1 | Pending |
-| CART-04 | Phase 1 | Pending |
-| CART-05 | Phase 1 | Pending |
-| BUS-01 | Phase 1 | Pending |
-| BUS-02 | Phase 1 | Pending |
-| BUS-03 | Phase 1 | Pending |
-| BUS-04 | Phase 1 | Pending |
+| CART-01 | Phase 1 | Complete |
+| CART-02 | Phase 1 | Complete |
+| CART-03 | Phase 1 | Complete |
+| CART-04 | Phase 1 | Complete |
+| CART-05 | Phase 1 | Complete |
+| BUS-01 | Phase 1 | Complete |
+| BUS-02 | Phase 1 | Complete |
+| BUS-03 | Phase 1 | Complete |
+| BUS-04 | Phase 1 | Complete |
 | BOOT-01 | Phase 2 | Pending |
 | CPU-01 | Phase 2 | Pending |
 | CPU-02 | Phase 2 | Pending |
@@ -148,4 +148,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-05-02*
-*Last updated: 2026-05-02 after roadmap feedback insertion*
+*Last updated: 2026-05-02 after Phase 1 completion*

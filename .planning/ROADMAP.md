@@ -12,7 +12,7 @@ GameGirl v1.0 turns the current Rust CLI scaffold into a testable DMG emulator c
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Cartridge and Bus Foundation** - Replace placeholder ROM text loading with binary cartridge parsing and a tested DMG Bus skeleton
+- [x] **Phase 1: Cartridge and Bus Foundation** - Replace placeholder ROM text loading with binary cartridge parsing and a tested DMG Bus skeleton
 - [ ] **Phase 2: CPU Core Foundation** - Add DMG CPU state, Bus-backed fetch/decode/execute flow, staged initial instruction groups, and cycle reporting
 - [ ] **Phase 2.1: Minimal Serial and ROM Test Harness INSERTED** - Run small ROM fixtures under deterministic limits and capture serial test output
 - [ ] **Phase 3: Timer and Interrupt Foundations** - Model timer registers, interrupt state, delayed `ei`, and interrupt service behavior
@@ -35,9 +35,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: Replace text ROM loading with binary cartridge loading and CLI errors
-- [ ] 01-02: Parse cartridge headers and model ROM-only cartridge reads
-- [ ] 01-03: Introduce Bus address routing with focused tests
+- [x] 01-01: Replace text ROM loading with binary cartridge loading and CLI errors
+- [x] 01-02: Parse cartridge headers and model ROM-only cartridge reads
+- [x] 01-03: Introduce Bus address routing with focused tests
 
 ### Phase 2: CPU Core Foundation
 **Goal**: Emulator has a DMG CPU core that fetches through the Bus, starts from documented post-boot state, executes initial instruction groups in staged slices, updates flags, and reports cycles.
@@ -132,8 +132,8 @@ Phases execute in numeric order: 1 -> 2 -> 2.1 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Cartridge and Bus Foundation | 0/3 | Not started | - |
-| 2. CPU Core Foundation | 0/5 | Not started | - |
+| 1. Cartridge and Bus Foundation | 3/3 | Complete | 2026-05-02 |
+| 2. CPU Core Foundation | 0/5 | Ready to plan | - |
 | 2.1 Minimal Serial and ROM Test Harness INSERTED | 0/2 | Not started | - |
 | 3. Timer and Interrupt Foundations | 0/3 | Not started | - |
 | 4. Automated Validation Harness Expansion | 0/2 | Not started | - |

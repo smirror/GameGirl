@@ -18,11 +18,11 @@ GameGirl must execute DMG Game Boy ROMs accurately enough that behavior is drive
 - ✓ CLI entry point accepts a ROM path argument and rejects paths without `.gb` or `.gbc` suffixes — existing
 - ✓ Project includes local validation ROM suites for future emulator tests — existing
 - ✓ Project includes DMG-focused implementation research and a subsystem roadmap — existing
+- ✓ Load cartridge files as binary data and parse enough header metadata to identify the ROM and initial cartridge behavior — Phase 1
+- ✓ Define a DMG memory bus with 16-bit addressing and 8-bit read/write access — Phase 1
 
 ### Active
 
-- [ ] Load cartridge files as binary data and parse enough header metadata to identify the ROM and initial cartridge behavior
-- [ ] Define a DMG memory bus with 16-bit addressing and 8-bit read/write access
 - [ ] Start execution from documented post-boot DMG state rather than emulating the Nintendo boot ROM in v1.0
 - [ ] Implement CPU register state, instruction fetch/decode/execute flow, flags, stack behavior, and staged core instruction groups
 - [ ] Capture minimal serial output from `FF01`/`FF02` so ROM fixtures can report test results early
@@ -41,7 +41,7 @@ GameGirl must execute DMG Game Boy ROMs accurately enough that behavior is drive
 
 ## Context
 
-- The codebase is an early Rust CLI prototype. `src/main.rs` currently reads the supplied ROM path as UTF-8 text, so cartridge loading must switch to byte-oriented file reads before real ROM execution.
+- The codebase now has a thin CLI plus reusable `cartridge` and `bus` modules. Phase 2 should build CPU fetch/decode/execute through the Bus from documented post-boot state.
 - `docs/hot_to_proceed.md` recommends a Bus-centered design with CPU, PPU, Timer, Joypad, and Cartridge decoupled behind memory access.
 - `docs/gameboy_architecture_summary.md` narrows the initial target to DMG behavior, including the 16-bit memory map, LR35902/SM83 register model, interrupt priority, timer edge behavior, PPU modes, and VRAM/OAM access constraints.
 - The repository includes blargg and mooneye ROM suites under `roms/`, which should become the backbone for regression checks.
@@ -62,8 +62,8 @@ GameGirl must execute DMG Game Boy ROMs accurately enough that behavior is drive
 |----------|-----------|---------|
 | Map the brownfield codebase before initialization | Existing code and docs should define validated context instead of treating the repo as blank | ✓ Good |
 | Target DMG behavior first | The docs and available tests support a focused first emulator target, while CGB multiplies hardware variance | — Pending |
-| Build around a Bus abstraction | CPU-visible memory behavior spans cartridge, RAM, timer, PPU, joypad, interrupts, and later audio | — Pending |
-| Replace text ROM loading with byte loading before emulator work | Game Boy ROMs are binary files and the current UTF-8 path is only a placeholder | — Pending |
+| Build around a Bus abstraction | CPU-visible memory behavior spans cartridge, RAM, timer, PPU, joypad, interrupts, and later audio | ✓ Phase 1 |
+| Replace text ROM loading with byte loading before emulator work | Game Boy ROMs are binary files and the current UTF-8 path is only a placeholder | ✓ Phase 1 |
 | Use blargg/mooneye ROMs for milestone validation | Emulator correctness depends on edge cases that ordinary demos can miss | — Pending |
 | Insert a minimal serial ROM harness before timer/interrupt work | CPU changes should encounter ROM-style failures early instead of waiting for a broad validation phase | — Pending |
 | Skip Nintendo boot ROM emulation in v1.0 | Starting at documented post-boot DMG state keeps the first milestone focused and aligns CPU defaults around `PC = 0x0100` | — Pending |
@@ -86,4 +86,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-02 after roadmap feedback insertion*
+*Last updated: 2026-05-02 after Phase 1 completion*
