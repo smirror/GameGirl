@@ -8,11 +8,11 @@ current_plan: Not started
 status: ready_to_plan
 stopped_at: Completed 02-05-PLAN.md
 last_updated: "2026-05-02T05:30:25.695Z"
-last_activity: 2026-05-02 -- Milestone v1.1 roadmap created
+last_activity: 2026-05-02 -- v1.1 plan granularity expanded and implementation spec added
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 17
+  total_plans: 32
   completed_plans: 0
   percent: 0
 ---
@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-05-02)
 Phase: 6 (cartridge-header-and-mapper-boundary) — READY TO PLAN
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-05-02 -- Milestone v1.1 roadmap created
+Last activity: 2026-05-02 -- v1.1 plan granularity expanded and implementation spec added
 
 ## Performance Metrics
 
@@ -48,7 +48,7 @@ No v1.1 plans completed yet.
 **Recent Trend:**
 
 - Last 5 plans: none in v1.1 yet
-- Trend: Milestone v1.1 roadmap created; next work is Phase 6 planning
+- Trend: Milestone v1.1 roadmap expanded from 17 to 32 smaller plans; next work is Phase 6 planning
 
 ## Accumulated Context
 
