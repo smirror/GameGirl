@@ -1,111 +1,106 @@
 # Requirements: GameGirl
 
 **Defined:** 2026-05-02
+**Milestone:** v1.1 Hardware-Accurate Core Architecture
 **Core Value:** GameGirl must execute DMG Game Boy ROMs accurately enough that behavior is driven by hardware rules and verified by known test ROMs, not by ad hoc demo success.
 
-## v1 Requirements
+## v1.1 Requirements
 
-Requirements for the initial emulator-core milestone. Each maps to roadmap phases.
+Requirements for hardening the emulator core around hardware-shaped cartridge, bus, MMIO, boot, mapper, timing, and validation boundaries.
 
-### Cartridge
+### Cartridge Header Policy
 
-- [x] **CART-01**: User can provide a `.gb` or `.gbc` file path and the emulator reads the ROM as binary bytes.
-- [x] **CART-02**: User receives a clear error when the ROM path is missing, unreadable, too short for a header, or invalid.
-- [x] **CART-03**: Emulator can parse cartridge header fields needed for planning execution: title, cartridge type, ROM size, RAM size, and entry/header region.
-- [x] **CART-04**: Emulator can construct a ROM-only cartridge representation that supports reads from fixed ROM address ranges.
-- [x] **CART-05**: Known Game Boy cartridge type codes are recognized as metadata so ROM files can load for inspection, while unknown type codes return `UnsupportedCartridgeType` and MBC runtime behavior remains deferred.
+- [ ] **CART-06**: User can load ROM files through one cartridge construction path that returns validated cartridge state and avoids duplicated CLI/core validation logic.
+- [ ] **CART-07**: Emulator can compute and expose cartridge header checksum status, treating invalid header checksums as a strict/boot-policy failure while keeping global checksum as metadata.
+- [ ] **CART-08**: Emulator can interpret the CGB flag at `0x0143`, allow DMG-compatible ROMs in DMG mode, and reject CGB-only ROMs with a clear error while CGB execution is out of scope.
+- [ ] **CART-09**: Emulator can parse title/manufacturer/CGB header fields without treating the CGB flag byte as part of a fixed 16-byte title in newer cartridges.
 
-### Bus
+### Mapper Layer
 
-- [x] **BUS-01**: Emulator exposes a Bus API that can read and write 8-bit values through the 16-bit DMG address space.
-- [x] **BUS-02**: Bus routes reads for cartridge ROM, work RAM, high RAM, interrupt enable, and basic I/O register ranges.
-- [x] **BUS-03**: Bus routes writes for writable memory and I/O registers without letting CPU instruction code bypass the Bus.
-- [x] **BUS-04**: Bus behavior is covered by tests for representative address ranges and invalid/unusable ranges.
+- [ ] **MAP-01**: Emulator exposes a mapper abstraction so CPU and Bus code access cartridge ROM/control and external RAM through mapper methods instead of cartridge-type conditionals.
+- [ ] **MAP-02**: Emulator supports NoMbc cartridges through the mapper abstraction, including fixed ROM reads, optional external RAM window behavior, and ignored control writes.
+- [ ] **MAP-03**: Emulator supports MBC1 ROM/RAM banking behavior, including RAM enable, ROM bank selection, RAM bank or upper-ROM-bank mode, and bank-zero remapping rules.
+- [ ] **MAP-04**: Emulator supports MBC3 and MBC5 basic ROM/RAM banking behavior while explicitly deferring MBC3 RTC ticking and MBC5 rumble effects.
 
-### Boot Model
+### Bus And Address Space
 
-- [x] **BOOT-01**: v1.0 starts from documented post-boot DMG state, including `PC = 0x0100`, and does not emulate the Nintendo boot ROM.
+- [ ] **BUS-05**: Emulator routes every DMG CPU-visible address range through the Bus or Interconnect, including cartridge ROM/control, VRAM, external RAM, WRAM, Echo RAM, OAM, unusable memory, I/O, HRAM, and IE.
+- [ ] **BUS-06**: Emulator separates execution reads/writes from side-effect-free `peek` reads so debugging or disassembly cannot trigger MMIO actions.
+- [ ] **BUS-07**: Emulator can enforce VRAM and OAM CPU access restrictions through a PPU access-state hook, even before full pixel rendering exists.
+- [ ] **BUS-08**: Emulator routes `A000-BFFF` external cartridge RAM and mapper-backed special windows through the mapper rather than returning a generic unmapped value.
 
-### CPU
+### MMIO Devices
 
-- [x] **CPU-01**: Emulator can initialize DMG CPU registers and program counter/stack pointer to documented post-boot values.
-- [x] **CPU-02**: CPU fetches opcodes through the Bus and advances `PC` according to instruction length.
-- [x] **CPU-03**: CPU can execute initial load and control instructions needed for simple ROM startup.
-- [x] **CPU-04**: CPU can execute arithmetic/logical instruction helpers with correct `Z`, `N`, `H`, and `C` flag behavior.
-- [x] **CPU-05**: CPU can execute jump, call, return, and stack helpers needed for ROM control flow.
-- [x] **CPU-06**: Each implemented CPU instruction reports elapsed machine cycles for device timing.
+- [ ] **MMIO-01**: Emulator models `FF00` joypad row selection and active-low button reads through a Joypad device instead of plain I/O byte storage.
+- [ ] **MMIO-02**: Emulator models `FF04-FF07` timer/divider registers through a Timer device, including DIV reset on write and a hook for TAC/DIV edge effects.
+- [ ] **MMIO-03**: Emulator models `FF01/FF02` serial register behavior enough to capture test ROM output, clear transfer-start state, and request serial interrupts deterministically.
+- [ ] **MMIO-04**: Emulator models `FF0F` interrupt request and `FFFF` interrupt enable through shared interrupt state used by CPU and devices.
+- [ ] **MMIO-05**: Emulator models `FF46` OAM DMA start/progress state through a DMA controller and exposes bus restrictions during active DMA.
 
-### Timing
+### Boot And Machine Timing
 
-- [ ] **TIME-01**: Timer implements `DIV`, `TIMA`, `TMA`, and `TAC` using an internal system counter model.
-- [ ] **TIME-02**: Timer increments `TIMA` from selected counter-bit falling edges and handles `DIV`/`TAC` write side effects.
-- [ ] **TIME-03**: Timer handles `TIMA` overflow reload and timer interrupt request timing.
-- [ ] **INT-01**: Emulator models `IE`, `IF`, and CPU-internal `IME`, including delayed `ei` behavior.
-- [ ] **INT-02**: CPU can service enabled interrupts by clearing `IME`, clearing the requested `IF` bit, pushing `PC`, and jumping to the correct vector.
-
-### Serial
-
-- [ ] **SERIAL-01**: Emulator captures test ROM serial output through `SB` (`0xFF01`) and `SC` (`0xFF02`) by appending `SB` to a test buffer when `SC == 0x81`, without claiming full link-cable accuracy.
+- [ ] **BOOT-02**: Emulator exposes explicit `SkipBootRom` and `UseBootRom` startup policies so post-boot defaults are never mixed with active boot ROM execution.
+- [ ] **BOOT-03**: Emulator can route boot ROM reads over cartridge reads while mapped and unmap the boot ROM with the one-way `FF50` boot lock behavior.
+- [ ] **MACH-01**: Emulator has a top-level Machine or equivalent owner for CPU, cartridge, RAM, and device state, with Bus/Interconnect acting as an address router.
+- [ ] **MACH-02**: Emulator advances devices by machine cycles after each CPU instruction using `StepResult.machine_cycles`.
+- [ ] **MACH-03**: Timer, serial, DMA, PPU access state, and interrupt hooks can receive M-cycle ticks without requiring CPU instruction code to know device internals.
 
 ### Validation
 
-- [ ] **TEST-01**: Cargo tests cover cartridge parsing, Bus address routing, CPU flags/instructions, timer behavior, and interrupt behavior introduced in v1.
-- [ ] **TEST-02**: Emulator has a ROM test harness that can run at least one checked-in `.gb` fixture, custom or known-test, with a deterministic timeout.
-- [ ] **TEST-03**: ROM harness can report pass/fail through a documented signal such as serial output or debug-break behavior.
-- [ ] **TEST-04**: Expanded ROM validation can run selected blargg or mooneye ROMs matched to implemented CPU/timer/interrupt capability, with documented expectations.
+- [ ] **TEST-05**: Cargo tests cover full address-space routing, Echo RAM mirroring, unusable memory behavior, VRAM/OAM access gating, external RAM routing, and side-effect-free peek behavior.
+- [ ] **TEST-06**: Cargo tests cover key MMIO side effects for joypad, timer/divider writes, serial transfer completion, interrupt request/enable state, DMA start, and boot ROM unmap.
+- [ ] **TEST-07**: Cargo tests cover NoMbc, MBC1, MBC3, and MBC5 mapper behavior with focused ROM/RAM bank fixtures.
+- [ ] **TEST-08**: ROM-driven validation harness can run capability-gated fixtures with deterministic pass/fail/timeout reporting and serial-output capture.
 
-### PPU
+## Future Requirements
 
-- [ ] **PPU-01**: Emulator has a PPU state skeleton that advances LY/dot/mode state from elapsed cycles.
-- [ ] **PPU-02**: Bus enforces VRAM and OAM access restrictions based on current PPU mode.
-- [ ] **PPU-03**: PPU mode transitions can request VBlank and LCD-related interrupts through the shared interrupt path.
+Deferred to later milestones. Tracked but not in the v1.1 roadmap.
 
-## v2 Requirements
+### CPU Completion
 
-Deferred to future release. Tracked but not in current roadmap.
+- **CPU-07**: Emulator can execute remaining SM83 base opcodes and CB-prefixed opcodes with tested flag/timing behavior.
+- **CPU-08**: Emulator can execute interrupt control instructions such as `EI`, `DI`, `RETI`, and HALT edge cases with hardware-compatible timing.
+
+### Timing And Interrupt Precision
+
+- **TIME-04**: Timer obscure behavior is tightened against mooneye/blargg timing ROMs after the M-cycle architecture exists.
+- **INT-03**: CPU interrupt service timing is validated against ROM-driven interrupt tests.
 
 ### Rendering
 
-- **REND-01**: Emulator can render DMG background tiles into a 160x144 frame buffer.
-- **REND-02**: Emulator can render Window layer behavior.
-- **REND-03**: Emulator can render Sprite/OAM behavior with scanline limits and priority rules.
-
-### Input
-
-- **INPT-01**: User can control Joypad state for D-pad, A, B, Select, and Start.
-- **INPT-02**: Emulator can request Joypad interrupts on relevant input changes.
+- **PPU-04**: Emulator can render DMG background/window/sprite pixels into a frame buffer.
+- **PPU-05**: Emulator can pass capability-appropriate PPU mode and OAM bug tests.
 
 ### Cartridge Expansion
 
-- **MBC-01**: Emulator can run MBC1 ROMs with ROM banking and external RAM behavior.
-- **MBC-02**: Emulator can run MBC2 ROMs with built-in RAM behavior.
-- **MBC-03**: Emulator can run MBC3 ROMs with RAM behavior, then RTC behavior once normal banking is reliable.
-- **MBC-04**: Emulator can run MBC5 ROMs, with rumble treated as an optional compatibility extension.
-- **MBC-05**: Emulator can classify specialty cartridge families such as MBC6, MBC7, Pocket Camera, Bandai Tama5, HuC3, and HuC1 while deferring their device-specific hardware behavior until targeted compatibility work.
-- **SAVE-01**: Emulator can persist and reload battery-backed external RAM.
+- **MBC-06**: Emulator supports MBC2 512x4-bit RAM semantics.
+- **MBC-07**: Emulator supports MBC3 RTC ticking, latching, persistence, and edge cases.
+- **MBC-08**: Emulator supports specialty cartridge families such as MBC6, MBC7, Pocket Camera, Bandai Tama5, HuC3, and HuC1.
+- **SAVE-02**: Emulator can persist and reload battery-backed external RAM.
 
-### Audio and Host
+### Audio And Host
 
-- **APU-01**: Emulator can model DMG pulse, wave, and noise channel state.
-- **APU-02**: Emulator can output audio through a host audio backend.
-- **HOST-01**: User can run ROMs in an interactive desktop window.
+- **APU-03**: Emulator can model DMG APU channel state.
+- **APU-04**: Emulator can output audio through a host backend.
+- **HOST-02**: User can run ROMs in an interactive desktop window.
 
 ### Compatibility
 
-- **CGB-01**: Emulator can select and execute Color Game Boy behavior.
+- **CGB-02**: Emulator can execute CGB mode, including CGB-specific VRAM/WRAM banking, palettes, DMA, speed switching, and register behavior.
 
 ## Out of Scope
 
-Explicitly excluded. Documented to prevent scope creep.
+Explicitly excluded from v1.1. Documented to prevent scope creep.
 
 | Feature | Reason |
 |---------|--------|
-| CGB support in v1 | DMG correctness is already a large hardware target; CGB adds banked VRAM/WRAM, palettes, and speed behavior |
-| Full pixel rendering in v1 | PPU mode/access correctness should land before visual output |
-| Audio output in v1 | APU is timing-sensitive and should follow CPU/bus/timer stability |
-| Desktop UI in v1 | Core correctness and automated validation matter before host polish |
-| Broad MBC runtime support in v1 | v1 recognizes known cartridge type metadata for loadability, but bank switching, external RAM, battery persistence, RTC, rumble, sensors, and specialty hardware should follow once CPU/Bus validation is stable |
-| Cycle-perfect completion for every subsystem | v1 establishes architecture and selected verified behavior; later phases tighten compatibility |
+| Full CGB execution | v1.1 may classify or reject CGB-only ROMs, but implementing CGB mode would expand VRAM/WRAM banking, palettes, DMA, and speed behavior. |
+| Full pixel rendering | v1.1 only needs PPU access-state hooks for bus correctness; rendering can follow once timing and memory access rules are stable. |
+| Audio output | APU work depends on stable CPU/device timing and is not needed for the architecture hardening milestone. |
+| Bundled Nintendo boot ROM images | v1.1 can support a boot ROM path/policy but should not ship copyrighted boot ROM bytes. |
+| Full MBC3 RTC behavior | MBC3 banking can land first; RTC ticking/latching/persistence should be a focused later compatibility slice. |
+| Save persistence | External RAM semantics should be correct before adding filesystem persistence. |
+| Broad ROM-suite pass claims | v1.1 harness must be capability-gated; unsupported hardware failures should not masquerade as emulator regressions. |
 
 ## Traceability
 
@@ -113,41 +108,38 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CART-01 | Phase 1 | Complete |
-| CART-02 | Phase 1 | Complete |
-| CART-03 | Phase 1 | Complete |
-| CART-04 | Phase 1 | Complete |
-| CART-05 | Phase 1 | Complete |
-| BUS-01 | Phase 1 | Complete |
-| BUS-02 | Phase 1 | Complete |
-| BUS-03 | Phase 1 | Complete |
-| BUS-04 | Phase 1 | Complete |
-| BOOT-01 | Phase 2 | Complete |
-| CPU-01 | Phase 2 | Complete |
-| CPU-02 | Phase 2 | Complete |
-| CPU-03 | Phase 2 | Complete |
-| CPU-04 | Phase 2 | Complete |
-| CPU-05 | Phase 2 | Complete |
-| CPU-06 | Phase 2 | Complete |
-| SERIAL-01 | Phase 2.1 | Pending |
-| TIME-01 | Phase 3 | Pending |
-| TIME-02 | Phase 3 | Pending |
-| TIME-03 | Phase 3 | Pending |
-| INT-01 | Phase 3 | Pending |
-| INT-02 | Phase 3 | Pending |
-| TEST-01 | Phase 4 | Pending |
-| TEST-02 | Phase 2.1 | Pending |
-| TEST-03 | Phase 2.1 | Pending |
-| TEST-04 | Phase 4 | Pending |
-| PPU-01 | Phase 5 | Pending |
-| PPU-02 | Phase 5 | Pending |
-| PPU-03 | Phase 5 | Pending |
+| CART-06 | TBD | Pending |
+| CART-07 | TBD | Pending |
+| CART-08 | TBD | Pending |
+| CART-09 | TBD | Pending |
+| MAP-01 | TBD | Pending |
+| MAP-02 | TBD | Pending |
+| MAP-03 | TBD | Pending |
+| MAP-04 | TBD | Pending |
+| BUS-05 | TBD | Pending |
+| BUS-06 | TBD | Pending |
+| BUS-07 | TBD | Pending |
+| BUS-08 | TBD | Pending |
+| MMIO-01 | TBD | Pending |
+| MMIO-02 | TBD | Pending |
+| MMIO-03 | TBD | Pending |
+| MMIO-04 | TBD | Pending |
+| MMIO-05 | TBD | Pending |
+| BOOT-02 | TBD | Pending |
+| BOOT-03 | TBD | Pending |
+| MACH-01 | TBD | Pending |
+| MACH-02 | TBD | Pending |
+| MACH-03 | TBD | Pending |
+| TEST-05 | TBD | Pending |
+| TEST-06 | TBD | Pending |
+| TEST-07 | TBD | Pending |
+| TEST-08 | TBD | Pending |
 
 **Coverage:**
-- v1 requirements: 29 total
-- Mapped to phases: 29
-- Unmapped: 0
+- v1.1 requirements: 26 total
+- Mapped to phases: 0
+- Unmapped: 26
 
 ---
 *Requirements defined: 2026-05-02*
-*Last updated: 2026-05-02 after Phase 2 completion*
+*Last updated: 2026-05-02 after v1.1 requirements definition*
