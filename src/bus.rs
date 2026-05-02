@@ -91,6 +91,7 @@ mod tests {
         let mut bus = bus();
 
         assert_eq!(bus.read8(0x0000), 0xAA);
+        assert_eq!(bus.read8(0x7FFF), 0xBB);
         bus.write8(0x0000, 0x99);
         assert_eq!(bus.read8(0x0000), 0xAA);
     }
@@ -111,8 +112,21 @@ mod tests {
         let mut bus = bus();
 
         bus.write8(0xFEA0, 0x12);
+        bus.write8(0xFEFF, 0x34);
 
         assert_eq!(bus.read8(0xFEA0), 0xFF);
+        assert_eq!(bus.read8(0xFEFF), 0xFF);
+    }
+
+    #[test]
+    fn oam_placeholder_range_is_writable() {
+        let mut bus = bus();
+
+        bus.write8(0xFE00, 0x12);
+        bus.write8(0xFE9F, 0x34);
+
+        assert_eq!(bus.read8(0xFE00), 0x12);
+        assert_eq!(bus.read8(0xFE9F), 0x34);
     }
 
     #[test]
@@ -126,5 +140,16 @@ mod tests {
         assert_eq!(bus.read8(0xFF00), 0x12);
         assert_eq!(bus.read8(0xFF80), 0x34);
         assert_eq!(bus.read8(0xFFFF), 0x56);
+    }
+
+    #[test]
+    fn unmapped_ranges_read_ff_and_ignore_writes() {
+        let mut bus = bus();
+
+        bus.write8(0x8000, 0x12);
+        bus.write8(0xA000, 0x34);
+
+        assert_eq!(bus.read8(0x8000), 0xFF);
+        assert_eq!(bus.read8(0xA000), 0xFF);
     }
 }
