@@ -1,0 +1,141 @@
+# Codebase Structure
+
+**Analysis Date:** 2026-05-02
+
+## Directory Layout
+
+```text
+GameGirl/
+|-- .github/             # GitHub automation, CI, labels, dependabot
+|-- docs/                # Design notes and Game Boy implementation research
+|-- roms/                # Sample and validation ROMs plus upstream test sources
+|-- src/                 # Rust application source
+|-- target/              # Cargo build output, local/generated
+|-- Cargo.toml           # Rust package manifest
+|-- Cargo.lock           # Cargo lockfile
+|-- README.md            # Project references and resource links
+|-- LICENSE              # MIT license
+`-- renovate.json        # Renovate configuration
+```
+
+## Directory Purposes
+
+**src/:**
+- Purpose: Rust application source.
+- Contains: currently only `src/main.rs`.
+- Key files: `src/main.rs` - CLI prototype.
+- Subdirectories: none.
+
+**docs/:**
+- Purpose: Project-specific implementation notes.
+- Contains: roadmap and Game Boy architecture summary.
+- Key files:
+  - `docs/hot_to_proceed.md` - Japanese implementation roadmap and resource guide.
+  - `docs/gameboy_architecture_summary.md` - DMG-focused hardware behavior summary.
+- Subdirectories: none.
+
+**roms/:**
+- Purpose: Local ROM fixtures and upstream emulator test suites.
+- Contains: sample hello-world ROM, blargg tests, mooneye tests.
+- Key files:
+  - `roms/hello-world/hello-world.gb` - simple sample ROM.
+  - `roms/blargg-gb-tests/cpu_instrs/cpu_instrs.gb` - CPU instruction validation ROM.
+  - `roms/mooneye/acceptance/` - timing and hardware acceptance tests.
+- Subdirectories: grouped by source/test suite and test category.
+
+**.github/:**
+- Purpose: Repository automation.
+- Contains: workflows, labeler config, auto-assign config, dependabot config.
+- Key files:
+  - `.github/workflows/rust.yml` - Rust format, clippy, and tests.
+  - `.github/workflows/rust-clippy.yml` - clippy SARIF upload workflow.
+  - `.github/dependabot.yml` - dependency update configuration.
+
+**target/:**
+- Purpose: Cargo build artifacts.
+- Contains: compiler outputs.
+- Committed: should remain untracked; it is a generated directory.
+
+## Key File Locations
+
+**Entry Points:**
+- `src/main.rs` - binary crate entry point.
+
+**Configuration:**
+- `Cargo.toml` - package metadata and dependencies.
+- `Cargo.lock` - locked dependency graph.
+- `.editorconfig` - editor formatting defaults.
+- `.github/workflows/*.yml` - CI behavior.
+- `renovate.json` - Renovate configuration.
+
+**Core Logic:**
+- `src/main.rs` - all current runtime logic.
+
+**Testing:**
+- `roms/blargg-gb-tests/` - CPU, timing, sound, memory, and OAM validation ROMs.
+- `roms/mooneye/` - acceptance, emulator-only, manual-only, and utility ROMs.
+- No Rust test files are currently present.
+
+**Documentation:**
+- `README.md` - external documentation and implementation references.
+- `docs/hot_to_proceed.md` - local implementation roadmap.
+- `docs/gameboy_architecture_summary.md` - local hardware behavior summary.
+- `roms/README.md` and nested ROM readmes - test fixture context.
+
+## Naming Conventions
+
+**Files:**
+- Rust source: `snake_case.rs`, currently `main.rs`.
+- Markdown docs: descriptive lowercase names in `docs/`; uppercase for root `README.md` and `LICENSE`.
+- ROM fixtures: preserve upstream filenames, including spaces and hardware suffixes where present.
+
+**Directories:**
+- Source directories are short lowercase names: `src`, `docs`, `roms`.
+- ROM directories preserve upstream suite/category names.
+
+**Special Patterns:**
+- `.gb` and `.gbc` are runtime ROM input formats.
+- `.sym` files accompany many test ROMs.
+- `.asm` and `.s` files are assembly sources for sample/test ROMs.
+
+## Where to Add New Code
+
+**New Emulator Module:**
+- Primary code: create focused Rust modules under `src/`, for example `src/bus.rs`, `src/cpu.rs`, `src/cartridge.rs`, `src/timer.rs`, `src/ppu.rs`.
+- Module wiring: declare modules from `src/main.rs` or a future `src/lib.rs`.
+- Tests: add unit tests inside each module or integration tests under a new `tests/` directory.
+
+**New CLI Behavior:**
+- Implementation: `src/main.rs` until CLI logic becomes large enough to extract.
+- Tests: integration tests can invoke the binary once behavior is stable.
+
+**New Test Harness:**
+- Implementation: likely `tests/` for integration tests and helper utilities.
+- Fixtures: use existing ROMs under `roms/`; avoid duplicating large ROM assets.
+
+**New Documentation:**
+- Project implementation notes: `docs/`.
+- GSD planning docs: `.planning/`.
+
+## Special Directories
+
+**roms/:**
+- Purpose: checked-in emulator validation assets.
+- Source: sample code plus upstream test suites.
+- Committed: yes.
+- Caution: contains many binary files and upstream naming conventions; preserve paths.
+
+**target/:**
+- Purpose: generated Cargo build artifacts.
+- Source: `cargo build`, `cargo test`, and other Cargo commands.
+- Committed: no.
+
+**.planning/:**
+- Purpose: GSD planning state and codebase maps.
+- Source: generated by GSD workflows.
+- Committed: yes if `commit_docs` remains enabled.
+
+---
+
+*Structure analysis: 2026-05-02*
+*Update when directory structure changes*
