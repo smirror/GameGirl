@@ -58,3 +58,42 @@ pub fn load_rom_file(path: impl AsRef<Path>) -> Result<Vec<u8>, CartridgeError> 
     validate_rom_bytes(&bytes)?;
     Ok(bytes)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn rom_bytes() -> Vec<u8> {
+        vec![0; MIN_CARTRIDGE_HEADER_LEN]
+    }
+
+    #[test]
+    fn rejects_rom_shorter_than_header() {
+        let bytes = vec![0; MIN_CARTRIDGE_HEADER_LEN - 1];
+        let result = validate_rom_bytes(&bytes);
+
+        match result {
+            Err(CartridgeError::TooShort { len }) => {
+                assert_eq!(len, MIN_CARTRIDGE_HEADER_LEN - 1);
+            }
+            other => panic!("expected too-short error, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn accepts_rom_with_complete_header_region() {
+        let bytes = rom_bytes();
+
+        assert!(validate_rom_bytes(&bytes).is_ok());
+    }
+
+    #[test]
+    fn too_short_error_display_is_human_readable() {
+        let error = CartridgeError::TooShort { len: 3 };
+
+        assert_eq!(
+            error.to_string(),
+            "ROM is too short: 3 bytes read, expected at least 336 bytes"
+        );
+    }
+}
