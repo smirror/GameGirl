@@ -101,37 +101,37 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CART-01 | TBD | Pending |
-| CART-02 | TBD | Pending |
-| CART-03 | TBD | Pending |
-| CART-04 | TBD | Pending |
-| BUS-01 | TBD | Pending |
-| BUS-02 | TBD | Pending |
-| BUS-03 | TBD | Pending |
-| BUS-04 | TBD | Pending |
-| CPU-01 | TBD | Pending |
-| CPU-02 | TBD | Pending |
-| CPU-03 | TBD | Pending |
-| CPU-04 | TBD | Pending |
-| CPU-05 | TBD | Pending |
-| CPU-06 | TBD | Pending |
-| TIME-01 | TBD | Pending |
-| TIME-02 | TBD | Pending |
-| TIME-03 | TBD | Pending |
-| INT-01 | TBD | Pending |
-| INT-02 | TBD | Pending |
-| TEST-01 | TBD | Pending |
-| TEST-02 | TBD | Pending |
-| TEST-03 | TBD | Pending |
-| PPU-01 | TBD | Pending |
-| PPU-02 | TBD | Pending |
-| PPU-03 | TBD | Pending |
+| CART-01 | Phase 1 | Pending |
+| CART-02 | Phase 1 | Pending |
+| CART-03 | Phase 1 | Pending |
+| CART-04 | Phase 1 | Pending |
+| BUS-01 | Phase 1 | Pending |
+| BUS-02 | Phase 1 | Pending |
+| BUS-03 | Phase 1 | Pending |
+| BUS-04 | Phase 1 | Pending |
+| CPU-01 | Phase 2 | Pending |
+| CPU-02 | Phase 2 | Pending |
+| CPU-03 | Phase 2 | Pending |
+| CPU-04 | Phase 2 | Pending |
+| CPU-05 | Phase 2 | Pending |
+| CPU-06 | Phase 2 | Pending |
+| TIME-01 | Phase 3 | Pending |
+| TIME-02 | Phase 3 | Pending |
+| TIME-03 | Phase 3 | Pending |
+| INT-01 | Phase 3 | Pending |
+| INT-02 | Phase 3 | Pending |
+| TEST-01 | Phase 4 | Pending |
+| TEST-02 | Phase 4 | Pending |
+| TEST-03 | Phase 4 | Pending |
+| PPU-01 | Phase 5 | Pending |
+| PPU-02 | Phase 5 | Pending |
+| PPU-03 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 25 total
-- Mapped to phases: 0
-- Unmapped: 25
+- Mapped to phases: 25
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-02*
-*Last updated: 2026-05-02 after initial definition*
+*Last updated: 2026-05-02 after roadmap traceability mapping*
