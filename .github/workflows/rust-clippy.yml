@@ -10,7 +10,6 @@
 name: rust-clippy analyze
 
 on:
-on:
   push:
     branches: [ "main" ]
     paths:
