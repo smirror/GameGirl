@@ -21,6 +21,16 @@ pub struct Cartridge {
 }
 
 impl Cartridge {
+    pub fn from_bytes(bytes: Vec<u8>) -> Result<Self, CartridgeError> {
+        let header = CartridgeHeader::parse(&bytes)?;
+
+        if let CartridgeType::Unsupported(code) = header.cartridge_type {
+            return Err(CartridgeError::UnsupportedCartridgeType(code));
+        }
+
+        Ok(Self { rom: bytes, header })
+    }
+
     pub fn rom_len(&self) -> usize {
         self.rom.len()
     }
@@ -180,8 +190,18 @@ pub fn load_rom_file(path: impl AsRef<Path>) -> Result<Vec<u8>, CartridgeError> 
         source,
     })?;
 
-    validate_rom_bytes(&bytes)?;
+    Cartridge::from_bytes(bytes.clone())?;
     Ok(bytes)
+}
+
+pub fn load_cartridge_file(path: impl AsRef<Path>) -> Result<Cartridge, CartridgeError> {
+    let path = path.as_ref();
+    let bytes = std::fs::read(path).map_err(|source| CartridgeError::Io {
+        path: path.to_path_buf(),
+        source,
+    })?;
+
+    Cartridge::from_bytes(bytes)
 }
 
 #[cfg(test)]
@@ -220,5 +240,48 @@ mod tests {
             error.to_string(),
             "ROM is too short: 3 bytes read, expected at least 336 bytes"
         );
+    }
+
+    #[test]
+    fn constructs_rom_only_cartridge() {
+        let cartridge = Cartridge::from_bytes(rom_bytes()).expect("valid ROM-only cartridge");
+
+        assert_eq!(cartridge.header.cartridge_type, CartridgeType::RomOnly);
+        assert_eq!(cartridge.header.rom_size, 32 * 1024);
+        assert_eq!(cartridge.header.ram_size, 0);
+        assert_eq!(cartridge.rom_len(), MIN_CARTRIDGE_HEADER_LEN);
+    }
+
+    #[test]
+    fn rejects_unsupported_cartridge_type() {
+        let mut bytes = rom_bytes();
+        bytes[CARTRIDGE_TYPE_OFFSET] = 0x01;
+
+        match Cartridge::from_bytes(bytes) {
+            Err(CartridgeError::UnsupportedCartridgeType(0x01)) => {}
+            other => panic!("expected unsupported cartridge type, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn rejects_unsupported_rom_size_code() {
+        let mut bytes = rom_bytes();
+        bytes[ROM_SIZE_OFFSET] = 0xFF;
+
+        match Cartridge::from_bytes(bytes) {
+            Err(CartridgeError::UnsupportedRomSize(0xFF)) => {}
+            other => panic!("expected unsupported ROM size, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn rejects_unsupported_ram_size_code() {
+        let mut bytes = rom_bytes();
+        bytes[RAM_SIZE_OFFSET] = 0xFF;
+
+        match Cartridge::from_bytes(bytes) {
+            Err(CartridgeError::UnsupportedRamSize(0xFF)) => {}
+            other => panic!("expected unsupported RAM size, got {other:?}"),
+        }
     }
 }
