@@ -108,38 +108,38 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CART-06 | TBD | Pending |
-| CART-07 | TBD | Pending |
-| CART-08 | TBD | Pending |
-| CART-09 | TBD | Pending |
-| MAP-01 | TBD | Pending |
-| MAP-02 | TBD | Pending |
-| MAP-03 | TBD | Pending |
-| MAP-04 | TBD | Pending |
-| BUS-05 | TBD | Pending |
-| BUS-06 | TBD | Pending |
-| BUS-07 | TBD | Pending |
-| BUS-08 | TBD | Pending |
-| MMIO-01 | TBD | Pending |
-| MMIO-02 | TBD | Pending |
-| MMIO-03 | TBD | Pending |
-| MMIO-04 | TBD | Pending |
-| MMIO-05 | TBD | Pending |
-| BOOT-02 | TBD | Pending |
-| BOOT-03 | TBD | Pending |
-| MACH-01 | TBD | Pending |
-| MACH-02 | TBD | Pending |
-| MACH-03 | TBD | Pending |
-| TEST-05 | TBD | Pending |
-| TEST-06 | TBD | Pending |
-| TEST-07 | TBD | Pending |
-| TEST-08 | TBD | Pending |
+| CART-06 | Phase 6 | Pending |
+| CART-07 | Phase 6 | Pending |
+| CART-08 | Phase 6 | Pending |
+| CART-09 | Phase 6 | Pending |
+| MAP-01 | Phase 6 | Pending |
+| MAP-02 | Phase 6 | Pending |
+| MAP-03 | Phase 10 | Pending |
+| MAP-04 | Phase 10 | Pending |
+| BUS-05 | Phase 7 | Pending |
+| BUS-06 | Phase 7 | Pending |
+| BUS-07 | Phase 7 | Pending |
+| BUS-08 | Phase 7 | Pending |
+| MMIO-01 | Phase 8 | Pending |
+| MMIO-02 | Phase 8 | Pending |
+| MMIO-03 | Phase 8 | Pending |
+| MMIO-04 | Phase 8 | Pending |
+| MMIO-05 | Phase 8 | Pending |
+| BOOT-02 | Phase 9 | Pending |
+| BOOT-03 | Phase 9 | Pending |
+| MACH-01 | Phase 9 | Pending |
+| MACH-02 | Phase 9 | Pending |
+| MACH-03 | Phase 9 | Pending |
+| TEST-05 | Phase 7 | Pending |
+| TEST-06 | Phase 8 | Pending |
+| TEST-07 | Phase 10 | Pending |
+| TEST-08 | Phase 10 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 26 total
-- Mapped to phases: 0
-- Unmapped: 26
+- Mapped to phases: 26
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-02*
-*Last updated: 2026-05-02 after v1.1 requirements definition*
+*Last updated: 2026-05-02 after v1.1 roadmap creation*

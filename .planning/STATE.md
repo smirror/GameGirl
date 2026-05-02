@@ -2,13 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Hardware-Accurate Core Architecture
-status: planning
-last_updated: "2026-05-02T05:26:04.819Z"
-last_activity: 2026-05-02
+current_phase: 6
+current_phase_name: cartridge-header-and-mapper-boundary
+current_plan: Not started
+status: ready_to_plan
+stopped_at: Completed 02-05-PLAN.md
+last_updated: "2026-05-02T05:30:25.695Z"
+last_activity: 2026-05-02 -- Milestone v1.1 roadmap created
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
-  total_plans: 0
+  total_plans: 17
   completed_plans: 0
   percent: 0
 ---
@@ -20,34 +24,31 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-02)
 
 **Core value:** GameGirl must execute DMG Game Boy ROMs accurately enough that behavior is driven by hardware rules and verified by known test ROMs, not by ad hoc demo success.
-**Current focus:** Phase 2.1 — minimal-serial-and-rom-test-harness-inserted
+**Current focus:** Phase 6 — cartridge-header-and-mapper-boundary
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-05-02 — Milestone v1.1 started
+Phase: 6 (cartridge-header-and-mapper-boundary) — READY TO PLAN
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-05-02 -- Milestone v1.1 roadmap created
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 8
+- Total plans completed: 0
 - Average duration: n/a
 - Total execution time: 0 hours
 
 **By Phase:**
 
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 01 | 3 | - | - |
-| 02 | 5 | - | - |
+No v1.1 plans completed yet.
 
 **Recent Trend:**
 
-- Last 5 plans: 02-01, 02-02, 02-03, 02-04, 02-05
-- Trend: Phase 2 complete; next work is Phase 2.1 planning
+- Last 5 plans: none in v1.1 yet
+- Trend: Milestone v1.1 roadmap created; next work is Phase 6 planning
 
 ## Accumulated Context
 

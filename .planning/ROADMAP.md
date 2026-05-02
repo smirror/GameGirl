@@ -1,150 +1,141 @@
-# Roadmap: GameGirl
+# Roadmap: GameGirl v1.1
 
 ## Overview
 
-GameGirl v1.0 turns the current Rust CLI scaffold into a testable DMG emulator core foundation. The roadmap starts with binary cartridge loading, known cartridge type metadata recognition, and a Bus-centered memory map, then adds a deliberately staged CPU core, inserts minimal serial/ROM validation before timer work, expands timing/interrupt validation, and finally adds PPU mode/access foundations before any full rendering, audio, CGB, or UI polish. MBC controller behavior is intentionally staged after the core execution path is stable: known cartridge types should load as metadata, but bank switching, external RAM, battery persistence, RTC, rumble, sensors, and specialty hardware should land through focused cartridge-controller phases.
+GameGirl v1.1 hardens the emulator core around hardware-shaped boundaries before broader CPU/PPU compatibility work continues. The milestone turns cartridge loading into a single mapper-ready path, expands the Bus into a full DMG address-space router, replaces key I/O byte storage with device register handlers, makes boot policy explicit, adds M-cycle machine stepping, and finishes with staged MBC controller foundations plus a capability-gated ROM harness.
 
 ## Phases
 
 **Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+- Phase numbering continues from the previous milestone.
+- v1.1 starts at Phase 6 because v1.0 used Phases 1-5.
 
-Decimal phases appear between their surrounding integers in numeric order.
-
-- [x] **Phase 1: Cartridge and Bus Foundation** - Replace placeholder ROM text loading with binary cartridge parsing and a tested DMG Bus skeleton
-- [x] **Phase 2: CPU Core Foundation** - Add DMG CPU state, Bus-backed fetch/decode/execute flow, staged initial instruction groups, and cycle reporting (completed 2026-05-02)
-- [ ] **Phase 2.1: Minimal Serial and ROM Test Harness INSERTED** - Run small ROM fixtures under deterministic limits and capture serial test output
-- [ ] **Phase 3: Timer and Interrupt Foundations** - Model timer registers, interrupt state, delayed `ei`, and interrupt service behavior
-- [ ] **Phase 4: Automated Validation Harness Expansion** - Expand the early ROM harness into reproducible Cargo-based validation against capability-appropriate test ROMs
-- [ ] **Phase 5: PPU Mode Skeleton and Access Rules** - Add cycle-driven PPU mode state, VRAM/OAM access restrictions, and interrupt hooks
+- [ ] **Phase 6: Cartridge Header and Mapper Boundary** - Unify cartridge loading, enforce header/mode policy, and introduce a mapper-ready cartridge shape
+- [ ] **Phase 7: Full Address Space and Peekable Interconnect** - Route every DMG CPU-visible range and separate execution reads from side-effect-free inspection
+- [ ] **Phase 8: Side-Effect MMIO Device Skeletons** - Move key I/O registers behind joypad, timer, serial, interrupt, DMA, and PPU access-state devices
+- [ ] **Phase 9: Boot Policy and M-Cycle Machine** - Add explicit boot modes and top-level machine stepping that advances devices from CPU machine cycles
+- [ ] **Phase 10: MBC Controllers and ROM Harness** - Implement staged MBC1/MBC3/MBC5 basics and capability-gated ROM validation
 
 ## Phase Details
 
-### Phase 1: Cartridge and Bus Foundation
-**Goal**: User can load ROM bytes into a cartridge representation and exercise a Bus API for core DMG memory ranges.
-**Depends on**: Nothing (first phase)
-**Requirements**: [CART-01, CART-02, CART-03, CART-04, CART-05, BUS-01, BUS-02, BUS-03, BUS-04]
+### Phase 6: Cartridge Header and Mapper Boundary
+
+**Goal**: ROM loading produces one validated cartridge object with explicit header policy, CGB mode classification, and NoMbc mapper behavior.
+**Depends on**: Phase 2 CPU Core Foundation
+**Requirements**: [CART-06, CART-07, CART-08, CART-09, MAP-01, MAP-02]
 **UI hint**: no
-**Success Criteria** (what must be TRUE):
-  1. User can run the CLI with a `.gb` path and the program reads binary bytes without UTF-8 assumptions.
-  2. User gets clear errors for missing, unreadable, too-short, or invalid ROM inputs.
-  3. Cartridge header parsing exposes title, type, ROM size, RAM size, and entry/header region data in tests.
-  4. Known cartridge type codes are recognized as metadata so checked-in ROMs can be loaded for inspection; unknown type codes still fail with `UnsupportedCartridgeType`.
-  5. MBC register writes remain explicit no-ops until bank-controller behavior is added in later cartridge-controller work.
-  6. Bus read/write tests cover cartridge ROM, WRAM, HRAM, interrupt enable, I/O, and representative unusable ranges.
+
+**Success Criteria**:
+1. CLI and library loading both use the same cartridge construction path.
+2. Header checksum status is computed and exposed, with strict/boot policy able to reject invalid headers.
+3. CGB-only ROMs return a clear unsupported-mode error while DMG-compatible ROMs remain loadable.
+4. Cartridge title/manufacturer/CGB metadata is parsed without fixed-title overlap mistakes.
+5. CPU and Bus interact with cartridge ROM/control and external RAM through a mapper abstraction, with NoMbc implemented first.
+
 **Plans**: 3 plans
 
 Plans:
-- [x] 01-01: Replace text ROM loading with binary cartridge loading and CLI errors
-- [x] 01-02: Parse cartridge headers and model ROM-only cartridge reads
-- [x] 01-03: Introduce Bus address routing with focused tests
+- [ ] 06-01: Unify cartridge loading and header checksum policy
+- [ ] 06-02: Add CGB flag mode classification and title/manufacturer parsing
+- [ ] 06-03: Introduce mapper trait with NoMbc implementation
 
-### Phase 2: CPU Core Foundation
-**Goal**: Emulator has a DMG CPU core that fetches through the Bus, starts from documented post-boot state, executes initial instruction groups in staged slices, updates flags, and reports cycles.
-**Depends on**: Phase 1
-**Requirements**: [BOOT-01, CPU-01, CPU-02, CPU-03, CPU-04, CPU-05, CPU-06]
+### Phase 7: Full Address Space and Peekable Interconnect
+
+**Goal**: Bus/Interconnect covers the full DMG CPU address space and exposes side-effect-free inspection reads.
+**Depends on**: Phase 6
+**Requirements**: [BUS-05, BUS-06, BUS-07, BUS-08, TEST-05]
 **UI hint**: no
-**Success Criteria** (what must be TRUE):
-  1. v1.0 starts from documented post-boot DMG state and does not emulate the Nintendo boot ROM.
-  2. CPU fetches opcodes through Bus and advances `PC` by instruction length.
-  3. NOP, HALT/STOP placeholders, basic 8-bit loads, arithmetic/logical helpers, and control-flow/stack helpers are implemented through small plan slices with targeted unit tests.
-  4. Each implemented instruction reports elapsed machine cycles for downstream device timing.
-  5. CB-prefixed opcodes are either represented by a clear skeleton or explicitly deferred with deterministic unsupported behavior.
-**Plans**: 5 plans
 
-Plans:
-- [x] 02-01: Add CPU registers, flags, boot defaults, and fetch skeleton
-- [x] 02-02: Implement NOP, HALT/STOP placeholders, and basic 8-bit loads
-- [x] 02-03: Implement INC/DEC/ADD/SUB/AND/OR/XOR/CP with flag tests
-- [x] 02-04: Implement JP/JR/CALL/RET/RST and stack helpers
-- [x] 02-05: Add CB-prefix skeleton or explicit CB deferral plus cycle-returning step behavior
+**Success Criteria**:
+1. `0000-FFFF` routes through explicit cartridge, VRAM, external RAM, WRAM/Echo RAM, OAM, unusable, I/O, HRAM, and IE behavior.
+2. `A000-BFFF` reads/writes route to mapper external RAM or mapper-backed windows.
+3. `peek8` can inspect addresses without triggering execution-side effects.
+4. VRAM/OAM access can be allowed or blocked through a PPU access-state hook.
+5. Cargo tests cover the full memory map, Echo RAM mirroring, unusable behavior, mapper ERAM routing, and peek semantics.
 
-### Phase 2.1: Minimal Serial and ROM Test Harness INSERTED
-**Goal**: Emulator can run small ROM fixtures under a deterministic step limit and collect serial test output.
-**Depends on**: Phase 2
-**Requirements**: [SERIAL-01, TEST-02, TEST-03]
-**UI hint**: no
-**Success Criteria** (what must be TRUE):
-  1. Harness can load a checked-in `.gb` fixture through the cartridge and Bus path.
-  2. Emulator can run until timeout or an explicit pass/fail signal, and timeout is reported as failure.
-  3. Serial output via `SB` (`0xFF01`) and `SC` (`0xFF02`) is captured into a test buffer when a test transfer is requested.
-  4. At least one tiny custom ROM or capability-appropriate known test ROM fixture runs deterministically.
-**Plans**: 2 plans
-
-Plans:
-- [ ] 02.1-01: Add minimal serial transfer register handling for ROM test output
-- [ ] 02.1-02: Build deterministic ROM step harness and first fixture assertion
-
-### Phase 3: Timer and Interrupt Foundations
-**Goal**: Emulator can advance timer state from CPU cycles and service enabled DMG interrupts through shared `IE`/`IF`/`IME` behavior.
-**Depends on**: Phase 2.1
-**Requirements**: [TIME-01, TIME-02, TIME-03, INT-01, INT-02]
-**UI hint**: no
-**Success Criteria** (what must be TRUE):
-  1. Timer tests show `DIV`, `TIMA`, `TMA`, and `TAC` behavior driven by an internal system counter.
-  2. `DIV` and `TAC` writes can trigger documented timer edge effects.
-  3. `TIMA` overflow reload and timer interrupt request timing are covered by tests.
-  4. CPU interrupt tests cover `IE`, `IF`, `IME`, delayed `ei`, vector jumps, `PC` push, and request clearing.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: Implement timer registers with internal counter and edge behavior
-- [ ] 03-02: Implement interrupt registers, delayed `ei`, and interrupt service flow
-- [ ] 03-03: Integrate CPU cycles with timer/interrupt progression and tests
+- [ ] 07-01: Expand Bus/Interconnect to full DMG address map
+- [ ] 07-02: Add side-effect-free peek path
+- [ ] 07-03: Add PPU access-state hooks and memory-map tests
 
-### Phase 4: Automated Validation Harness Expansion
-**Goal**: User can run reproducible Cargo tests that expand the early ROM harness into capability-appropriate blargg/mooneye validation with deterministic pass/fail reporting.
-**Depends on**: Phase 3
-**Requirements**: [TEST-01, TEST-03, TEST-04]
+### Phase 8: Side-Effect MMIO Device Skeletons
+
+**Goal**: Key I/O registers become device-backed register handlers instead of anonymous byte-array storage.
+**Depends on**: Phase 7
+**Requirements**: [MMIO-01, MMIO-02, MMIO-03, MMIO-04, MMIO-05, TEST-06]
 **UI hint**: no
-**Success Criteria** (what must be TRUE):
-  1. Cargo tests cover cartridge parsing, Bus routing, CPU flags/instructions, timer behavior, and interrupt behavior introduced so far.
-  2. The ROM harness can load and run at least one checked-in blargg or mooneye ROM matched to the implemented CPU/timer/interrupt capability.
-  3. The harness documents and asserts its pass/fail signal, such as serial output or debug-break behavior.
-  4. Test ROM selection is documented so unsupported subsystems do not masquerade as emulator failures.
-**Plans**: 2 plans
+
+**Success Criteria**:
+1. `FF00` joypad reads reflect selected rows and active-low button state.
+2. `FF04-FF07` timer/divider register reads/writes route through a Timer device with DIV reset and TAC/DIV edge hooks.
+3. `FF01/FF02` serial behavior captures test output, clears transfer-start state, and can request serial interrupts.
+4. `FF0F` and `FFFF` are shared interrupt state rather than unrelated bytes.
+5. `FF46` starts DMA controller state and exposes active-DMA bus restrictions.
+6. Cargo tests cover each MMIO side effect introduced in this phase.
+
+**Plans**: 4 plans
 
 Plans:
-- [ ] 04-01: Consolidate unit/integration coverage for v1 core behavior
-- [ ] 04-02: Expand ROM harness with capability-gated blargg/mooneye pass/fail reporting
+- [ ] 08-01: Add Joypad and Interrupts register devices
+- [ ] 08-02: Add Timer register device with write side-effect hooks
+- [ ] 08-03: Add Serial register behavior for ROM test output
+- [ ] 08-04: Add OAM DMA controller skeleton and MMIO tests
 
-### Phase 5: PPU Mode Skeleton and Access Rules
-**Goal**: Emulator has enough PPU timing state for Bus access restrictions and interrupt hooks, without committing to full pixel rendering yet.
-**Depends on**: Phase 4
-**Requirements**: [PPU-01, PPU-02, PPU-03]
+### Phase 9: Boot Policy and M-Cycle Machine
+
+**Goal**: Emulator startup and device advancement are coordinated by an explicit Machine layer.
+**Depends on**: Phase 8
+**Requirements**: [BOOT-02, BOOT-03, MACH-01, MACH-02, MACH-03]
 **UI hint**: no
-**Success Criteria** (what must be TRUE):
-  1. PPU state advances dot, LY, and mode values from elapsed CPU cycles.
-  2. Bus read/write tests enforce VRAM and OAM access restrictions based on PPU mode.
-  3. PPU mode transitions can request VBlank and LCD-related interrupts through the shared interrupt path.
-  4. Rendering, audio, CGB, and host UI remain explicitly deferred.
+
+**Success Criteria**:
+1. `SkipBootRom` initializes documented post-boot CPU/device defaults and starts execution at `0x0100`.
+2. `UseBootRom` starts at `0x0000`, maps boot ROM reads over cartridge reads, and unmaps through the one-way `FF50` lock.
+3. Machine owns CPU, cartridge, RAM, and device state while Interconnect routes CPU-visible access.
+4. Each CPU instruction's `StepResult.machine_cycles` is consumed through a machine-level M-cycle tick loop.
+5. Timer, serial, DMA, PPU access state, and interrupt hooks can advance without CPU opcode code knowing device internals.
+
 **Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: Add PPU mode/dot/LY state machine skeleton
-- [ ] 05-02: Enforce VRAM/OAM access restrictions through Bus tests
-- [ ] 05-03: Connect PPU mode transitions to interrupt request hooks
+- [ ] 09-01: Add Machine ownership and Interconnect construction
+- [ ] 09-02: Add BootMode policy and FF50 boot ROM mapping
+- [ ] 09-03: Consume CPU machine cycles through device tick hooks
 
-## Deferred Cartridge Controller Roadmap
+### Phase 10: MBC Controllers and ROM Harness
 
-Known cartridge type code recognition is part of the completed cartridge foundation so ROM files from the local corpus can be loaded and inspected without pretending MBC behavior already works. Runtime behavior remains staged:
+**Goal**: Mapper behavior expands beyond NoMbc and ROM-driven validation becomes capability-gated.
+**Depends on**: Phase 9
+**Requirements**: [MAP-03, MAP-04, TEST-07, TEST-08]
+**UI hint**: no
 
-1. **Common MBC controllers first**: Implement MBC1, MBC2, MBC3, and MBC5 bank switching because these cover the checked-in blargg/mooneye MBC fixtures and many commercial DMG games.
-2. **External RAM and persistence next**: Add controller-specific RAM enable/banking behavior, then battery-backed save persistence once RAM semantics are tested.
-3. **Controller extras after basics**: Add MBC3 RTC, MBC5 rumble, and other optional controller features only after normal ROM/RAM banking behavior is reliable.
-4. **Specialty cartridges last**: Treat MBC6, MBC7 sensor/rumble, Pocket Camera, Bandai Tama5, HuC3, and HuC1 as compatibility-expansion work, not v1 core foundation work.
+**Success Criteria**:
+1. MBC1 tests cover RAM enable, ROM bank selection, banking mode, upper bank bits, and bank-zero remapping.
+2. MBC3 and MBC5 tests cover basic ROM/RAM banking while RTC and rumble effects remain explicit deferrals.
+3. Mapper tests use focused fixtures rather than depending on broad commercial ROM behavior.
+4. ROM harness can run selected capability-compatible fixtures with deterministic pass/fail/timeout results and serial-output capture.
+5. Unsupported ROM-suite fixtures are classified by missing capability rather than counted as emulator regressions.
+
+**Plans**: 4 plans
+
+Plans:
+- [ ] 10-01: Implement and test MBC1 banking behavior
+- [ ] 10-02: Implement and test MBC3/MBC5 basic banking behavior
+- [ ] 10-03: Build capability-gated ROM harness runner
+- [ ] 10-04: Wire first mapper/MMIO-capable ROM validation fixtures
+
+## Deferred Roadmap
+
+v1.1 intentionally prepares hardware-shaped boundaries. Later milestones should use those boundaries to complete CPU opcodes, timer/interrupt precision, PPU rendering, APU behavior, save persistence, CGB execution, and specialty cartridge compatibility.
 
 ## Progress
 
-**Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 2.1 -> 3 -> 4 -> 5
-
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Cartridge and Bus Foundation | 3/3 | Complete | 2026-05-02 |
-| 2. CPU Core Foundation | 5/5 | Complete | 2026-05-02 |
-| 2.1 Minimal Serial and ROM Test Harness INSERTED | 0/2 | Not started | - |
-| 3. Timer and Interrupt Foundations | 0/3 | Not started | - |
-| 4. Automated Validation Harness Expansion | 0/2 | Not started | - |
-| 5. PPU Mode Skeleton and Access Rules | 0/3 | Not started | - |
+| 6. Cartridge Header and Mapper Boundary | 0/3 | Ready to plan | - |
+| 7. Full Address Space and Peekable Interconnect | 0/3 | Not started | - |
+| 8. Side-Effect MMIO Device Skeletons | 0/4 | Not started | - |
+| 9. Boot Policy and M-Cycle Machine | 0/3 | Not started | - |
+| 10. MBC Controllers and ROM Harness | 0/4 | Not started | - |
