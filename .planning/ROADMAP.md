@@ -13,7 +13,7 @@ GameGirl v1.0 turns the current Rust CLI scaffold into a testable DMG emulator c
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Cartridge and Bus Foundation** - Replace placeholder ROM text loading with binary cartridge parsing and a tested DMG Bus skeleton
-- [ ] **Phase 2: CPU Core Foundation** - Add DMG CPU state, Bus-backed fetch/decode/execute flow, staged initial instruction groups, and cycle reporting
+- [x] **Phase 2: CPU Core Foundation** - Add DMG CPU state, Bus-backed fetch/decode/execute flow, staged initial instruction groups, and cycle reporting (completed 2026-05-02)
 - [ ] **Phase 2.1: Minimal Serial and ROM Test Harness INSERTED** - Run small ROM fixtures under deterministic limits and capture serial test output
 - [ ] **Phase 3: Timer and Interrupt Foundations** - Model timer registers, interrupt state, delayed `ei`, and interrupt service behavior
 - [ ] **Phase 4: Automated Validation Harness Expansion** - Expand the early ROM harness into reproducible Cargo-based validation against capability-appropriate test ROMs
@@ -54,11 +54,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 02-01: Add CPU registers, flags, boot defaults, and fetch skeleton
-- [ ] 02-02: Implement NOP, HALT/STOP placeholders, and basic 8-bit loads
-- [ ] 02-03: Implement INC/DEC/ADD/SUB/AND/OR/XOR/CP with flag tests
-- [ ] 02-04: Implement JP/JR/CALL/RET/RST and stack helpers
-- [ ] 02-05: Add CB-prefix skeleton or explicit CB deferral plus cycle-returning step behavior
+- [x] 02-01: Add CPU registers, flags, boot defaults, and fetch skeleton
+- [x] 02-02: Implement NOP, HALT/STOP placeholders, and basic 8-bit loads
+- [x] 02-03: Implement INC/DEC/ADD/SUB/AND/OR/XOR/CP with flag tests
+- [x] 02-04: Implement JP/JR/CALL/RET/RST and stack helpers
+- [x] 02-05: Add CB-prefix skeleton or explicit CB deferral plus cycle-returning step behavior
 
 ### Phase 2.1: Minimal Serial and ROM Test Harness INSERTED
 **Goal**: Emulator can run small ROM fixtures under a deterministic step limit and collect serial test output.
@@ -143,7 +143,7 @@ Phases execute in numeric order: 1 -> 2 -> 2.1 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Cartridge and Bus Foundation | 3/3 | Complete | 2026-05-02 |
-| 2. CPU Core Foundation | 0/5 | Ready to plan | - |
+| 2. CPU Core Foundation | 5/5 | Complete | 2026-05-02 |
 | 2.1 Minimal Serial and ROM Test Harness INSERTED | 0/2 | Not started | - |
 | 3. Timer and Interrupt Foundations | 0/3 | Not started | - |
 | 4. Automated Validation Harness Expansion | 0/2 | Not started | - |

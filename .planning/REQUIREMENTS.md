@@ -24,16 +24,16 @@ Requirements for the initial emulator-core milestone. Each maps to roadmap phase
 
 ### Boot Model
 
-- [ ] **BOOT-01**: v1.0 starts from documented post-boot DMG state, including `PC = 0x0100`, and does not emulate the Nintendo boot ROM.
+- [x] **BOOT-01**: v1.0 starts from documented post-boot DMG state, including `PC = 0x0100`, and does not emulate the Nintendo boot ROM.
 
 ### CPU
 
-- [ ] **CPU-01**: Emulator can initialize DMG CPU registers and program counter/stack pointer to documented post-boot values.
-- [ ] **CPU-02**: CPU fetches opcodes through the Bus and advances `PC` according to instruction length.
-- [ ] **CPU-03**: CPU can execute initial load and control instructions needed for simple ROM startup.
-- [ ] **CPU-04**: CPU can execute arithmetic/logical instruction helpers with correct `Z`, `N`, `H`, and `C` flag behavior.
-- [ ] **CPU-05**: CPU can execute jump, call, return, and stack helpers needed for ROM control flow.
-- [ ] **CPU-06**: Each implemented CPU instruction reports elapsed machine cycles for device timing.
+- [x] **CPU-01**: Emulator can initialize DMG CPU registers and program counter/stack pointer to documented post-boot values.
+- [x] **CPU-02**: CPU fetches opcodes through the Bus and advances `PC` according to instruction length.
+- [x] **CPU-03**: CPU can execute initial load and control instructions needed for simple ROM startup.
+- [x] **CPU-04**: CPU can execute arithmetic/logical instruction helpers with correct `Z`, `N`, `H`, and `C` flag behavior.
+- [x] **CPU-05**: CPU can execute jump, call, return, and stack helpers needed for ROM control flow.
+- [x] **CPU-06**: Each implemented CPU instruction reports elapsed machine cycles for device timing.
 
 ### Timing
 
@@ -122,13 +122,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BUS-02 | Phase 1 | Complete |
 | BUS-03 | Phase 1 | Complete |
 | BUS-04 | Phase 1 | Complete |
-| BOOT-01 | Phase 2 | Pending |
-| CPU-01 | Phase 2 | Pending |
-| CPU-02 | Phase 2 | Pending |
-| CPU-03 | Phase 2 | Pending |
-| CPU-04 | Phase 2 | Pending |
-| CPU-05 | Phase 2 | Pending |
-| CPU-06 | Phase 2 | Pending |
+| BOOT-01 | Phase 2 | Complete |
+| CPU-01 | Phase 2 | Complete |
+| CPU-02 | Phase 2 | Complete |
+| CPU-03 | Phase 2 | Complete |
+| CPU-04 | Phase 2 | Complete |
+| CPU-05 | Phase 2 | Complete |
+| CPU-06 | Phase 2 | Complete |
 | SERIAL-01 | Phase 2.1 | Pending |
 | TIME-01 | Phase 3 | Pending |
 | TIME-02 | Phase 3 | Pending |
@@ -150,4 +150,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-05-02*
-*Last updated: 2026-05-02 after Phase 1 completion*
+*Last updated: 2026-05-02 after Phase 2 completion*

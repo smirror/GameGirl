@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Emulator Core Foundation
-current_phase: 2
-current_phase_name: CPU Core Foundation
+current_phase: 2.1
+current_phase_name: minimal-serial-and-rom-test-harness-inserted
 current_plan: Not started
-status: executing
-stopped_at: Phase 2 context gathered
-last_updated: "2026-05-02T04:16:49.344Z"
-last_activity: 2026-05-02 -- Phase 02 planning complete
+status: ready_to_plan
+stopped_at: Completed 02-05-PLAN.md
+last_updated: "2026-05-02T04:43:13.550Z"
+last_activity: 2026-05-02 -- Phase 2 complete; ready to plan Phase 2.1
 progress:
   total_phases: 6
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 8
-  completed_plans: 3
-  percent: 38
+  completed_plans: 8
+  percent: 100
 ---
 
 # Project State
@@ -24,29 +24,29 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-02)
 
 **Core value:** GameGirl must execute DMG Game Boy ROMs accurately enough that behavior is driven by hardware rules and verified by known test ROMs, not by ad hoc demo success.
-**Current focus:** Phase 2: CPU Core Foundation
+**Current focus:** Phase 2.1 — minimal-serial-and-rom-test-harness-inserted
 
 ## Current Position
 
-Current Phase: 2
-Current Phase Name: CPU Core Foundation
+Current Phase: 2.1
+Current Phase Name: Minimal Serial and ROM Test Harness INSERTED
 Total Phases: 6
 Current Plan: Not started
-Total Plans in Phase: 5
-Status: Ready to execute
-Last activity: 2026-05-02 -- Phase 02 planning complete
-Last Activity Description: Phase 02 planning complete — 5 plans ready
+Total Plans in Phase: 2
+Status: Ready to plan
+Last activity: 2026-05-02 -- Phase 2 complete; ready to plan Phase 2.1
+Last Activity Description: Phase 2 complete; ready to plan Phase 2.1
 
-Phase: 2 of 6 (CPU Core Foundation)
+Phase: 2.1 (minimal-serial-and-rom-test-harness-inserted) — READY TO PLAN
 Plan: Not started
 
-Progress: [##        ] 17%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 3
+- Total plans completed: 8
 - Average duration: n/a
 - Total execution time: 0 hours
 
@@ -55,11 +55,12 @@ Progress: [##        ] 17%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01 | 3 | - | - |
+| 02 | 5 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01, 01-02, 01-03
-- Trend: Phase 1 complete; next work is Phase 2 planning
+- Last 5 plans: 02-01, 02-02, 02-03, 02-04, 02-05
+- Trend: Phase 2 complete; next work is Phase 2.1 planning
 
 ## Accumulated Context
 
@@ -101,6 +102,6 @@ Items acknowledged and carried forward from initialization:
 
 ## Session Continuity
 
-Last session: 2026-05-02T04:02:00.826Z
-Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-cpu-core-foundation/02-CONTEXT.md
+Last session: 2026-05-02T04:42:31.787Z
+Stopped at: Completed 02-05-PLAN.md
+Resume file: None
