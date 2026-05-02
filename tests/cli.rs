@@ -3,6 +3,8 @@ use std::path::PathBuf;
 use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use game_girl::memory_map::CARTRIDGE_ROM_SIZE;
+
 fn cli_path() -> &'static str {
     env!("CARGO_BIN_EXE_game_girl")
 }
@@ -22,7 +24,7 @@ fn temp_path(file_name: &str) -> PathBuf {
 }
 
 fn rom_only_bytes() -> Vec<u8> {
-    let mut bytes = vec![0; 0x8000];
+    let mut bytes = vec![0; CARTRIDGE_ROM_SIZE];
     bytes[0x0134..0x0138].copy_from_slice(b"TEST");
     bytes[0x0147] = 0x00;
     bytes[0x0148] = 0x00;

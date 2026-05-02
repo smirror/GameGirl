@@ -2,6 +2,8 @@ use std::io;
 use std::ops::Range;
 use std::path::{Path, PathBuf};
 
+use crate::memory_map::CARTRIDGE_ROM_END;
+
 pub const MIN_CARTRIDGE_HEADER_LEN: usize = 0x150;
 const ENTRY_POINT_RANGE: Range<usize> = 0x0100..0x0104;
 const LOGO_RANGE: Range<usize> = 0x0104..0x0134;
@@ -38,7 +40,7 @@ impl Cartridge {
     pub fn read_rom(&self, address: u16) -> u8 {
         let address = usize::from(address);
 
-        if address > 0x7FFF {
+        if address > usize::from(CARTRIDGE_ROM_END) {
             return 0xFF;
         }
 
@@ -258,7 +260,7 @@ pub fn load_rom_file(path: impl AsRef<Path>) -> Result<Vec<u8>, CartridgeError> 
         source,
     })?;
 
-    Cartridge::from_bytes(bytes.clone())?;
+    validate_rom_bytes(&bytes)?;
     Ok(bytes)
 }
 
@@ -281,7 +283,7 @@ mod tests {
     }
 
     fn full_rom_bytes() -> Vec<u8> {
-        vec![0; 0x8000]
+        vec![0; crate::memory_map::CARTRIDGE_ROM_SIZE]
     }
 
     #[test]
@@ -401,11 +403,11 @@ mod tests {
     fn rom_only_reads_fixed_rom_range() {
         let mut bytes = full_rom_bytes();
         bytes[0x0000] = 0xAA;
-        bytes[0x7FFF] = 0xBB;
+        bytes[usize::from(CARTRIDGE_ROM_END)] = 0xBB;
         let cartridge = Cartridge::from_bytes(bytes).expect("valid ROM-only cartridge");
 
         assert_eq!(cartridge.read_rom(0x0000), 0xAA);
-        assert_eq!(cartridge.read_rom(0x7FFF), 0xBB);
+        assert_eq!(cartridge.read_rom(CARTRIDGE_ROM_END), 0xBB);
     }
 
     #[test]
