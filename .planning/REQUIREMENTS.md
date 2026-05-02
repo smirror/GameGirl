@@ -1,0 +1,137 @@
+# Requirements: GameGirl
+
+**Defined:** 2026-05-02
+**Core Value:** GameGirl must execute DMG Game Boy ROMs accurately enough that behavior is driven by hardware rules and verified by known test ROMs, not by ad hoc demo success.
+
+## v1 Requirements
+
+Requirements for the initial emulator-core milestone. Each maps to roadmap phases.
+
+### Cartridge
+
+- [ ] **CART-01**: User can provide a `.gb` or `.gbc` file path and the emulator reads the ROM as binary bytes.
+- [ ] **CART-02**: User receives a clear error when the ROM path is missing, unreadable, too short for a header, or invalid.
+- [ ] **CART-03**: Emulator can parse cartridge header fields needed for planning execution: title, cartridge type, ROM size, RAM size, and entry/header region.
+- [ ] **CART-04**: Emulator can construct a ROM-only cartridge representation that supports reads from fixed ROM address ranges.
+
+### Bus
+
+- [ ] **BUS-01**: Emulator exposes a Bus API that can read and write 8-bit values through the 16-bit DMG address space.
+- [ ] **BUS-02**: Bus routes reads for cartridge ROM, work RAM, high RAM, interrupt enable, and basic I/O register ranges.
+- [ ] **BUS-03**: Bus routes writes for writable memory and I/O registers without letting CPU instruction code bypass the Bus.
+- [ ] **BUS-04**: Bus behavior is covered by tests for representative address ranges and invalid/unusable ranges.
+
+### CPU
+
+- [ ] **CPU-01**: Emulator can initialize DMG CPU registers and program counter/stack pointer to documented post-boot values.
+- [ ] **CPU-02**: CPU fetches opcodes through the Bus and advances `PC` according to instruction length.
+- [ ] **CPU-03**: CPU can execute initial load and control instructions needed for simple ROM startup.
+- [ ] **CPU-04**: CPU can execute arithmetic/logical instruction helpers with correct `Z`, `N`, `H`, and `C` flag behavior.
+- [ ] **CPU-05**: CPU can execute jump, call, return, and stack helpers needed for ROM control flow.
+- [ ] **CPU-06**: Each implemented CPU instruction reports elapsed machine cycles for device timing.
+
+### Timing
+
+- [ ] **TIME-01**: Timer implements `DIV`, `TIMA`, `TMA`, and `TAC` using an internal system counter model.
+- [ ] **TIME-02**: Timer increments `TIMA` from selected counter-bit falling edges and handles `DIV`/`TAC` write side effects.
+- [ ] **TIME-03**: Timer handles `TIMA` overflow reload and timer interrupt request timing.
+- [ ] **INT-01**: Emulator models `IE`, `IF`, and CPU-internal `IME`, including delayed `ei` behavior.
+- [ ] **INT-02**: CPU can service enabled interrupts by clearing `IME`, clearing the requested `IF` bit, pushing `PC`, and jumping to the correct vector.
+
+### Validation
+
+- [ ] **TEST-01**: Cargo tests cover cartridge parsing, Bus address routing, CPU flags/instructions, timer behavior, and interrupt behavior introduced in v1.
+- [ ] **TEST-02**: Emulator has a ROM test harness that can run at least one checked-in blargg or mooneye ROM with a deterministic timeout.
+- [ ] **TEST-03**: ROM harness can report pass/fail through a documented signal such as serial output or debug-break behavior.
+
+### PPU
+
+- [ ] **PPU-01**: Emulator has a PPU state skeleton that advances LY/dot/mode state from elapsed cycles.
+- [ ] **PPU-02**: Bus enforces VRAM and OAM access restrictions based on current PPU mode.
+- [ ] **PPU-03**: PPU mode transitions can request VBlank and LCD-related interrupts through the shared interrupt path.
+
+## v2 Requirements
+
+Deferred to future release. Tracked but not in current roadmap.
+
+### Rendering
+
+- **REND-01**: Emulator can render DMG background tiles into a 160x144 frame buffer.
+- **REND-02**: Emulator can render Window layer behavior.
+- **REND-03**: Emulator can render Sprite/OAM behavior with scanline limits and priority rules.
+
+### Input
+
+- **INPT-01**: User can control Joypad state for D-pad, A, B, Select, and Start.
+- **INPT-02**: Emulator can request Joypad interrupts on relevant input changes.
+
+### Cartridge Expansion
+
+- **MBC-01**: Emulator can run MBC1 ROMs.
+- **MBC-02**: Emulator can run MBC3 ROMs with RAM behavior.
+- **MBC-03**: Emulator can run MBC5 ROMs.
+- **SAVE-01**: Emulator can persist and reload battery-backed external RAM.
+
+### Audio and Host
+
+- **APU-01**: Emulator can model DMG pulse, wave, and noise channel state.
+- **APU-02**: Emulator can output audio through a host audio backend.
+- **HOST-01**: User can run ROMs in an interactive desktop window.
+
+### Compatibility
+
+- **CGB-01**: Emulator can select and execute Color Game Boy behavior.
+
+## Out of Scope
+
+Explicitly excluded. Documented to prevent scope creep.
+
+| Feature | Reason |
+|---------|--------|
+| CGB support in v1 | DMG correctness is already a large hardware target; CGB adds banked VRAM/WRAM, palettes, and speed behavior |
+| Full pixel rendering in v1 | PPU mode/access correctness should land before visual output |
+| Audio output in v1 | APU is timing-sensitive and should follow CPU/bus/timer stability |
+| Desktop UI in v1 | Core correctness and automated validation matter before host polish |
+| Broad MBC support in v1 | Start with ROM-only cartridge behavior, then expand once Bus and cartridge boundaries are proven |
+| Cycle-perfect completion for every subsystem | v1 establishes architecture and selected verified behavior; later phases tighten compatibility |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| CART-01 | TBD | Pending |
+| CART-02 | TBD | Pending |
+| CART-03 | TBD | Pending |
+| CART-04 | TBD | Pending |
+| BUS-01 | TBD | Pending |
+| BUS-02 | TBD | Pending |
+| BUS-03 | TBD | Pending |
+| BUS-04 | TBD | Pending |
+| CPU-01 | TBD | Pending |
+| CPU-02 | TBD | Pending |
+| CPU-03 | TBD | Pending |
+| CPU-04 | TBD | Pending |
+| CPU-05 | TBD | Pending |
+| CPU-06 | TBD | Pending |
+| TIME-01 | TBD | Pending |
+| TIME-02 | TBD | Pending |
+| TIME-03 | TBD | Pending |
+| INT-01 | TBD | Pending |
+| INT-02 | TBD | Pending |
+| TEST-01 | TBD | Pending |
+| TEST-02 | TBD | Pending |
+| TEST-03 | TBD | Pending |
+| PPU-01 | TBD | Pending |
+| PPU-02 | TBD | Pending |
+| PPU-03 | TBD | Pending |
+
+**Coverage:**
+- v1 requirements: 25 total
+- Mapped to phases: 0
+- Unmapped: 25
+
+---
+*Requirements defined: 2026-05-02*
+*Last updated: 2026-05-02 after initial definition*
