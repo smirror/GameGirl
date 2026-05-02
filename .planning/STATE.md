@@ -1,20 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: Emulator Core Foundation
-current_phase: 2.1
-current_phase_name: minimal-serial-and-rom-test-harness-inserted
-current_plan: Not started
-status: ready_to_plan
-stopped_at: Completed 02-05-PLAN.md
-last_updated: "2026-05-02T04:43:13.550Z"
-last_activity: 2026-05-02 -- Phase 2 complete; ready to plan Phase 2.1
+milestone: v1.1
+milestone_name: Hardware-Accurate Core Architecture
+status: planning
+last_updated: "2026-05-02T05:26:04.819Z"
+last_activity: 2026-05-02
 progress:
-  total_phases: 6
-  completed_phases: 2
-  total_plans: 8
-  completed_plans: 8
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -28,19 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-02)
 
 ## Current Position
 
-Current Phase: 2.1
-Current Phase Name: Minimal Serial and ROM Test Harness INSERTED
-Total Phases: 6
-Current Plan: Not started
-Total Plans in Phase: 2
-Status: Ready to plan
-Last activity: 2026-05-02 -- Phase 2 complete; ready to plan Phase 2.1
-Last Activity Description: Phase 2 complete; ready to plan Phase 2.1
-
-Phase: 2.1 (minimal-serial-and-rom-test-harness-inserted) — READY TO PLAN
-Plan: Not started
-
-Progress: [██████████] 100%
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-02 — Milestone v1.1 started
 
 ## Performance Metrics
 
