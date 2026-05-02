@@ -1,89 +1,58 @@
-# Stack Research
+# v1.1 Stack Research: Hardware-Accurate Core Architecture
 
-**Domain:** Rust DMG Game Boy emulator
-**Researched:** 2026-05-02
-**Confidence:** HIGH
+## Context
 
-## Recommended Stack
+GameGirl remains a Rust 2021 Cargo crate with no runtime dependencies. v1.1 should harden core architecture rather than add UI, audio output, or a large external framework.
 
-### Core Technologies
+## Stack Additions
 
-| Technology | Version | Purpose | Why Recommended |
-|------------|---------|---------|-----------------|
-| Rust stable | Current official docs show 1.95.0 | Emulator core and CLI | Existing crate is Rust 2021; Rust gives explicit ownership and bounds-checked data handling for untrusted ROM bytes |
-| Cargo | Bundled with Rust toolchain | Build, test, lint entry point | Existing repo already uses `Cargo.toml` and `Cargo.lock`; keeps the project simple |
-| Rust standard library | Bundled | CLI, filesystem, byte buffers | Enough for Phase 1 cartridge loading and core data structures; avoid dependencies until a real need appears |
+No new Rust dependencies are recommended for this milestone.
 
-### Supporting Libraries
+Use existing project tools:
 
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| None for Phase 1 | n/a | Keep the emulator core dependency-free | Use for cartridge loading, bus, CPU basics, timer, and initial tests |
-| clap | Defer | Rich CLI parsing | Consider only when CLI commands/options grow past one ROM path |
-| pixels/winit | Defer | Window/display output | Consider after CPU/bus/timer/PPU mode foundations can run meaningful frames |
-| cpal | Defer | Audio output | Consider after APU state is implemented and testable |
+- Cargo unit and integration tests.
+- Existing checked-in ROM corpus under `roms/`.
+- Shell verification script pattern from `scripts/verify_rom_loading.sh`.
+- Internal Rust modules for hardware devices.
 
-### Development Tools
+## New Internal Modules
 
-| Tool | Purpose | Notes |
-|------|---------|-------|
-| rustfmt | Formatting | Existing CI already runs `cargo fmt --all` |
-| Clippy | Linting | Existing CI runs `cargo clippy`; keep new code clippy-clean |
-| Cargo tests | Unit and integration tests | Add unit tests early; add ROM integration harness once execution loop exists |
-| blargg and mooneye ROMs | Hardware behavior validation | Already checked into `roms/`; wire them into tests in later phases |
+Recommended module split:
 
-## Installation
+- `src/machine.rs` — top-level machine/device owner and step orchestration.
+- `src/interconnect.rs` or evolved `src/bus.rs` — address router that exposes execution reads/writes and side-effect-free peeks.
+- `src/mapper.rs` or `src/cartridge/mapper.rs` — mapper trait plus NoMbc/MBC implementations.
+- `src/timer.rs` — DIV/TIMA/TMA/TAC state and write side effects.
+- `src/serial.rs` — SB/SC register behavior and test-output capture hook.
+- `src/joypad.rs` — active-low matrix register behavior.
+- `src/dma.rs` — OAM DMA request/progress state.
+- `src/ppu.rs` — minimal mode/access-state surface for VRAM/OAM restrictions.
+- `src/boot.rs` — boot mode and boot ROM mapping policy.
 
-```bash
-# Existing stack is already dependency-free.
-cargo build
-cargo test
-cargo clippy
-```
+## Why No Dependencies
 
-No new crates are recommended for the first milestone.
+The highest-risk work is hardware semantics, not parsing, UI, async, or data modeling. Standard library types are enough for:
 
-## Alternatives Considered
+- `Box<dyn Mapper>` or enum-backed mappers.
+- Fixed-size arrays for WRAM, VRAM, OAM, HRAM.
+- Explicit `Result`-based load errors.
+- Deterministic test harness loops.
 
-| Recommended | Alternative | When to Use Alternative |
-|-------------|-------------|-------------------------|
-| Standard library CLI parsing | clap | Use clap when there are multiple commands, flags, config files, or richer error messages |
-| `fs::read` for ROM bytes | `fs::read_to_string` | Never for ROMs; ROMs are binary, not UTF-8 text |
-| Dependency-free core | Framework-heavy emulator shell | Add host UI/audio dependencies only after core correctness has something to drive |
+## Primary References Checked
 
-## What NOT to Use
+- Pan Docs memory map and I/O ranges: https://gbdev.io/pandocs/Memory_Map.html
+- Pan Docs cartridge header: https://gbdev.io/pandocs/The_Cartridge_Header.html
+- Pan Docs MBC overview: https://gbdev.io/pandocs/MBCs.html
+- Pan Docs timer behavior: https://gbdev.io/pandocs/Timer_and_Divider_Registers.html and https://gbdev.io/pandocs/Timer_Obscure_Behaviour.html
+- Pan Docs OAM DMA and VRAM/OAM access: https://gbdev.io/pandocs/OAM_DMA_Transfer.html and https://gbdev.io/pandocs/Accessing_VRAM_and_OAM.html
+- Gekkio GB Complete Technical Reference: https://gekkio.fi/files/gb-docs/gbctr.pdf
+- mooneye-test-suite: https://github.com/Gekkio/mooneye-test-suite
+- blargg test ROM collection mirror: https://github.com/retrio/gb-test-roms
 
-| Avoid | Why | Use Instead |
-|-------|-----|-------------|
-| Text file reads for ROMs | `.gb` and `.gbc` are binary files; text reads can fail or misrepresent data | `std::fs::read`, which returns `Vec<u8>` |
-| CGB-first architecture | Color-specific behavior multiplies memory, timing, and rendering variance | DMG-first modules with explicit extension points |
-| UI/audio dependencies in Phase 1 | They distract from core correctness and make tests harder | Core crate modules plus Cargo tests |
-| Unsafe indexing as a shortcut | ROM parsing is untrusted binary input | Bounds-checked slices and explicit parse errors |
+## What Not To Add
 
-## Stack Patterns by Variant
-
-**If building the first milestone:**
-- Use only Rust std, Cargo tests, and checked-in ROM fixtures.
-- Because the main risk is correctness, not host integration.
-
-**If adding a desktop shell later:**
-- Keep the emulator core reusable and add host display/audio/input in separate modules.
-- Because UI refresh and audio callbacks should not own hardware rules.
-
-## Version Compatibility
-
-| Package A | Compatible With | Notes |
-|-----------|-----------------|-------|
-| Rust stable | Cargo, rustfmt, Clippy | No pinned version currently; add `rust-toolchain.toml` if reproducibility becomes important |
-| Rust std `fs::read` | Rust 1.26.0+ | Official docs show it returns `Result<Vec<u8>>`, which matches ROM loading needs |
-
-## Sources
-
-- https://doc.rust-lang.org/std/fs/fn.read.html - verified byte-oriented file loading API
-- https://gbdev.io/pandocs/Memory_Map.html - verified cartridge memory ranges and header location
-- https://github.com/gbdev/pandocs - verified Pan Docs as a maintained public Game Boy technical reference
-- `.planning/codebase/STACK.md` - verified current repo stack
-
----
-*Stack research for: Rust DMG Game Boy emulator*
-*Researched: 2026-05-02*
+- No GUI crate.
+- No audio backend.
+- No dynamic plugin system.
+- No generated opcode table dependency.
+- No broad test runner framework unless the local harness becomes unwieldy.
