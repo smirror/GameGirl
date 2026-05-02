@@ -2,7 +2,7 @@
 
 ## Overview
 
-GameGirl v1.0 turns the current Rust CLI scaffold into a testable DMG emulator core foundation. The roadmap starts with binary cartridge loading and a Bus-centered memory map, then adds a deliberately staged CPU core, inserts minimal serial/ROM validation before timer work, expands timing/interrupt validation, and finally adds PPU mode/access foundations before any full rendering, audio, CGB, or UI polish.
+GameGirl v1.0 turns the current Rust CLI scaffold into a testable DMG emulator core foundation. The roadmap starts with binary cartridge loading, known cartridge type metadata recognition, and a Bus-centered memory map, then adds a deliberately staged CPU core, inserts minimal serial/ROM validation before timer work, expands timing/interrupt validation, and finally adds PPU mode/access foundations before any full rendering, audio, CGB, or UI polish. MBC controller behavior is intentionally staged after the core execution path is stable: known cartridge types should load as metadata, but bank switching, external RAM, battery persistence, RTC, rumble, sensors, and specialty hardware should land through focused cartridge-controller phases.
 
 ## Phases
 
@@ -30,8 +30,9 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. User can run the CLI with a `.gb` path and the program reads binary bytes without UTF-8 assumptions.
   2. User gets clear errors for missing, unreadable, too-short, or invalid ROM inputs.
   3. Cartridge header parsing exposes title, type, ROM size, RAM size, and entry/header region data in tests.
-  4. Non-ROM-only cartridge types are parsed far enough to report their type, then fail with `UnsupportedCartridgeType` until MBC support is added.
-  5. Bus read/write tests cover cartridge ROM, WRAM, HRAM, interrupt enable, I/O, and representative unusable ranges.
+  4. Known cartridge type codes are recognized as metadata so checked-in ROMs can be loaded for inspection; unknown type codes still fail with `UnsupportedCartridgeType`.
+  5. MBC register writes remain explicit no-ops until bank-controller behavior is added in later cartridge-controller work.
+  6. Bus read/write tests cover cartridge ROM, WRAM, HRAM, interrupt enable, I/O, and representative unusable ranges.
 **Plans**: 3 plans
 
 Plans:
@@ -124,6 +125,15 @@ Plans:
 - [ ] 05-01: Add PPU mode/dot/LY state machine skeleton
 - [ ] 05-02: Enforce VRAM/OAM access restrictions through Bus tests
 - [ ] 05-03: Connect PPU mode transitions to interrupt request hooks
+
+## Deferred Cartridge Controller Roadmap
+
+Known cartridge type code recognition is part of the completed cartridge foundation so ROM files from the local corpus can be loaded and inspected without pretending MBC behavior already works. Runtime behavior remains staged:
+
+1. **Common MBC controllers first**: Implement MBC1, MBC2, MBC3, and MBC5 bank switching because these cover the checked-in blargg/mooneye MBC fixtures and many commercial DMG games.
+2. **External RAM and persistence next**: Add controller-specific RAM enable/banking behavior, then battery-backed save persistence once RAM semantics are tested.
+3. **Controller extras after basics**: Add MBC3 RTC, MBC5 rumble, and other optional controller features only after normal ROM/RAM banking behavior is reliable.
+4. **Specialty cartridges last**: Treat MBC6, MBC7 sensor/rumble, Pocket Camera, Bandai Tama5, HuC3, and HuC1 as compatibility-expansion work, not v1 core foundation work.
 
 ## Progress
 

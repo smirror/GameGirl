@@ -44,6 +44,12 @@ cargo fmt --all -- --check
 cargo clippy --all-targets -- -D warnings
 ```
 
+Verify that all checked-in ROM files can be loaded and parsed by the CLI:
+
+```bash
+scripts/verify_rom_loading.sh
+```
+
 ## Writing New Tests
 
 - Put pure module tests inside the same source file under `#[cfg(test)] mod tests`.
@@ -68,8 +74,8 @@ No coverage threshold is configured. There is no `tarpaulin`, `llvm-cov`, `grcov
 
 | Workflow | Trigger | Test-related behavior |
 |----------|---------|-----------------------|
-| `.github/workflows/rust.yml` | Push or pull request to `main` when Rust source files under `src/` change | Runs `cargo fmt --all`, `cargo clippy`, and `cargo test --verbose`. |
+| `.github/workflows/rust.yml` | Push or pull request to `main` when Rust source, tests, scripts, workflow config, Cargo metadata, or checked-in ROMs change | Runs `cargo fmt --all`, `cargo clippy`, `cargo test --verbose`, `cargo build`, and `scripts/verify_rom_loading.sh`. |
 | `.github/workflows/rust-clippy.yml` | Push, pull request, and a monthly schedule | Installs the stable Rust toolchain with clippy and uploads SARIF results. |
 | `.github/workflows/dependency-review.yml` | Pull request to `main` | Runs `actions/dependency-review-action@v4`. |
 
-The checked-in ROM directories `roms/blargg-gb-tests/`, `roms/mooneye/`, and `roms/hello-world/` are available for future emulator validation, but most of those ROMs are not yet wired into automated tests.
+The checked-in ROM directories `roms/blargg-gb-tests/`, `roms/mooneye/`, and `roms/hello-world/` are verified for loadability in CI. Behavioral pass/fail validation against those ROMs is still future emulator work.

@@ -49,7 +49,7 @@ CLI 実行時に必須なのは、最初の位置引数として渡す ROM パ�
 | ROM 拡張子 | はい | `.gb` または `.gbc`。大文字小文字は区別しません。 | `File must be a .gb or .gbc file` を表示して失敗終了します。 |
 | ROM ファイル読み込み | はい | `std::fs::read` で読めること。 | 読み込み失敗を表示して失敗終了します。 |
 | ROM ヘッダー長 | はい | 少なくとも `MIN_CARTRIDGE_HEADER_LEN` bytes あること。 | `CartridgeError::TooShort` を表示します。 |
-| カートリッジ種別 | はい | `0x00` は ROM-only として受け付けます。 | その他は `CartridgeError::UnsupportedCartridgeType` を返します。 |
+| カートリッジ種別 | はい | 既知の Game Boy cartridge type code を metadata として認識します。 | 未知の code は `CartridgeError::UnsupportedCartridgeType` を返します。 |
 | ROM サイズコード | はい | `0x00` から `0x08` をサポートします。 | その他は `CartridgeError::UnsupportedRomSize` を返します。 |
 | RAM サイズコード | はい | `0x00` から `0x05` をサポートします。 | その他は `CartridgeError::UnsupportedRamSize` を返します。 |
 
@@ -65,7 +65,7 @@ CLI 実行時に必須なのは、最初の位置引数として渡す ROM パ�
 | Bus HRAM | zero-filled `[u8; 0x7F]` | `src/bus.rs` |
 | Interrupt enable byte | `0` | `src/bus.rs` |
 | 未使用・未マップ領域の read | `0xFF` | `src/bus.rs` |
-| ROM-only cartridge write | 無視 | `src/cartridge.rs` |
+| ROM / MBC register write | bank-controller 挙動を実装するまでは無視 | `src/cartridge.rs` |
 
 ## 環境別 override
 

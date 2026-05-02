@@ -46,7 +46,7 @@ impl Cartridge {
     }
 
     pub fn write_rom(&mut self, _address: u16, _value: u8) {
-        // ROM-only cartridges do not mutate ROM bytes on writes.
+        // MBC register writes are deferred until bank-controller behavior is modeled.
     }
 }
 
@@ -97,6 +97,33 @@ impl CartridgeHeader {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CartridgeType {
     RomOnly,
+    Mbc1,
+    Mbc1Ram,
+    Mbc1RamBattery,
+    Mbc2,
+    Mbc2Battery,
+    RomRam,
+    RomRamBattery,
+    Mmm01,
+    Mmm01Ram,
+    Mmm01RamBattery,
+    Mbc3TimerBattery,
+    Mbc3TimerRamBattery,
+    Mbc3,
+    Mbc3Ram,
+    Mbc3RamBattery,
+    Mbc5,
+    Mbc5Ram,
+    Mbc5RamBattery,
+    Mbc5Rumble,
+    Mbc5RumbleRam,
+    Mbc5RumbleRamBattery,
+    Mbc6,
+    Mbc7SensorRumbleRamBattery,
+    PocketCamera,
+    BandaiTama5,
+    Huc3,
+    Huc1RamBattery,
     Unsupported(u8),
 }
 
@@ -104,6 +131,33 @@ impl CartridgeType {
     fn from_code(code: u8) -> Self {
         match code {
             0x00 => Self::RomOnly,
+            0x01 => Self::Mbc1,
+            0x02 => Self::Mbc1Ram,
+            0x03 => Self::Mbc1RamBattery,
+            0x05 => Self::Mbc2,
+            0x06 => Self::Mbc2Battery,
+            0x08 => Self::RomRam,
+            0x09 => Self::RomRamBattery,
+            0x0B => Self::Mmm01,
+            0x0C => Self::Mmm01Ram,
+            0x0D => Self::Mmm01RamBattery,
+            0x0F => Self::Mbc3TimerBattery,
+            0x10 => Self::Mbc3TimerRamBattery,
+            0x11 => Self::Mbc3,
+            0x12 => Self::Mbc3Ram,
+            0x13 => Self::Mbc3RamBattery,
+            0x19 => Self::Mbc5,
+            0x1A => Self::Mbc5Ram,
+            0x1B => Self::Mbc5RamBattery,
+            0x1C => Self::Mbc5Rumble,
+            0x1D => Self::Mbc5RumbleRam,
+            0x1E => Self::Mbc5RumbleRamBattery,
+            0x20 => Self::Mbc6,
+            0x22 => Self::Mbc7SensorRumbleRamBattery,
+            0xFC => Self::PocketCamera,
+            0xFD => Self::BandaiTama5,
+            0xFE => Self::Huc3,
+            0xFF => Self::Huc1RamBattery,
             other => Self::Unsupported(other),
         }
     }
@@ -273,12 +327,28 @@ mod tests {
     #[test]
     fn rejects_unsupported_cartridge_type() {
         let mut bytes = rom_bytes();
-        bytes[CARTRIDGE_TYPE_OFFSET] = 0x01;
+        bytes[CARTRIDGE_TYPE_OFFSET] = 0x04;
 
         match Cartridge::from_bytes(bytes) {
-            Err(CartridgeError::UnsupportedCartridgeType(0x01)) => {}
+            Err(CartridgeError::UnsupportedCartridgeType(0x04)) => {}
             other => panic!("expected unsupported cartridge type, got {other:?}"),
         }
+    }
+
+    #[test]
+    fn recognizes_known_mbc_cartridge_types() {
+        let mut bytes = rom_bytes();
+        bytes[CARTRIDGE_TYPE_OFFSET] = 0x03;
+        bytes[RAM_SIZE_OFFSET] = 0x02;
+
+        let cartridge = Cartridge::from_bytes(bytes).expect("known MBC cartridge type");
+
+        assert_eq!(
+            cartridge.header.cartridge_type,
+            CartridgeType::Mbc1RamBattery
+        );
+        assert_eq!(cartridge.header.cartridge_type_code, 0x03);
+        assert_eq!(cartridge.header.ram_size, 8 * 1024);
     }
 
     #[test]

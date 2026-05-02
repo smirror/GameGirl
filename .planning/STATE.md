@@ -85,6 +85,8 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260502-gih | Incorporate roadmap feedback: insert early minimal serial ROM validation harness, narrow CPU phase scope, and clarify ROM-only/MBC and post-boot assumptions | 2026-05-02 | docs-only | [260502-gih-incorporate-roadmap-feedback-insert-earl](./quick/260502-gih-incorporate-roadmap-feedback-insert-earl/) |
+| 260502-id3 | Fix ROM loading verification script and CI failure for cartridge type coverage | 2026-05-02 | working-tree | [260502-id3-fix-rom-loading-verification-script-and-](./quick/260502-id3-fix-rom-loading-verification-script-and-/) |
+| 260502-ipc | Update roadmap for known cartridge type recognition and staged MBC support | 2026-05-02 | working-tree | [260502-ipc-update-roadmap-for-known-cartridge-type-](./quick/260502-ipc-update-roadmap-for-known-cartridge-type-/) |
 
 ## Deferred Items
 

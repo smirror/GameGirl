@@ -49,7 +49,7 @@ The CLI requires exactly one user-provided runtime setting: a ROM path argument.
 | ROM path extension | Yes | Extension must be `.gb` or `.gbc`, case-insensitive. | Prints `File must be a .gb or .gbc file` and exits with failure. |
 | ROM file readability | Yes | `std::fs::read` must successfully read the file. | Returns a `CartridgeError::Io` message. |
 | ROM header length | Yes | ROM must be at least `MIN_CARTRIDGE_HEADER_LEN` bytes. | Returns a `CartridgeError::TooShort` message. |
-| Cartridge type | Yes | Type code `0x00` is accepted as ROM-only. | Other type codes return `CartridgeError::UnsupportedCartridgeType`. |
+| Cartridge type | Yes | Known Game Boy cartridge type codes are recognized for metadata loading. | Unknown type codes return `CartridgeError::UnsupportedCartridgeType`. |
 | ROM size code | Yes | Codes `0x00` through `0x08` are supported. | Other codes return `CartridgeError::UnsupportedRomSize`. |
 | RAM size code | Yes | Codes `0x00` through `0x05` are supported. | Other codes return `CartridgeError::UnsupportedRamSize`. |
 
@@ -65,7 +65,7 @@ The CLI requires exactly one user-provided runtime setting: a ROM path argument.
 | Bus HRAM | Zero-filled `[u8; 0x7F]` | `src/bus.rs` |
 | Interrupt enable byte | `0` | `src/bus.rs` |
 | Unusable and unmapped reads | `0xFF` | `src/bus.rs` |
-| ROM-only writes | Ignored | `src/cartridge.rs` |
+| ROM and MBC register writes | Ignored until bank-controller behavior is implemented | `src/cartridge.rs` |
 
 ## Per-Environment Overrides
 

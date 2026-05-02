@@ -27,8 +27,8 @@ graph TD
 ## Data Flow
 
 1. `src/main.rs` reads the first command-line argument and checks that the path extension is `.gb` or `.gbc`.
-2. The CLI calls `game_girl::cartridge::load_rom_file`, which reads bytes with `std::fs::read`.
-3. `Cartridge::from_bytes` parses the cartridge header, validates supported ROM/RAM size codes, and rejects unsupported cartridge types.
+2. The CLI reads ROM bytes with `std::fs::read`.
+3. `Cartridge::from_bytes` parses the cartridge header, validates supported ROM/RAM size codes, and recognizes known Game Boy cartridge type codes.
 4. `Bus::new` accepts a `Cartridge` and owns the CPU-visible memory backing used by the currently implemented ranges: cartridge ROM, WRAM, OAM, I/O registers, HRAM, and interrupt enable.
 5. Future CPU code should call `Bus::read8` and `Bus::write8` instead of reading cartridge or RAM storage directly.
 
@@ -36,9 +36,9 @@ graph TD
 
 | Abstraction | Location | Role |
 |-------------|----------|------|
-| `Cartridge` | `src/cartridge.rs` | Owns ROM bytes and exposes ROM-only cartridge reads and writes. |
+| `Cartridge` | `src/cartridge.rs` | Owns ROM bytes and exposes fixed ROM reads while bank-controller behavior is still deferred. |
 | `CartridgeHeader` | `src/cartridge.rs` | Stores parsed title, type, size, checksum, entry-point, logo, and CGB-flag metadata. |
-| `CartridgeType` | `src/cartridge.rs` | Distinguishes ROM-only cartridges from currently unsupported cartridge type codes. |
+| `CartridgeType` | `src/cartridge.rs` | Distinguishes known cartridge metadata type codes from unknown type codes. |
 | `CartridgeError` | `src/cartridge.rs` | Represents I/O, too-short, unsupported type, ROM-size, and RAM-size errors. |
 | `validate_rom_bytes` | `src/cartridge.rs` | Checks that a ROM is large enough to contain the full cartridge header region. |
 | `load_rom_file` | `src/cartridge.rs` | Loads and validates a ROM file, returning the raw bytes for the CLI. |

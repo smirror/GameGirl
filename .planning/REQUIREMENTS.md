@@ -13,7 +13,7 @@ Requirements for the initial emulator-core milestone. Each maps to roadmap phase
 - [x] **CART-02**: User receives a clear error when the ROM path is missing, unreadable, too short for a header, or invalid.
 - [x] **CART-03**: Emulator can parse cartridge header fields needed for planning execution: title, cartridge type, ROM size, RAM size, and entry/header region.
 - [x] **CART-04**: Emulator can construct a ROM-only cartridge representation that supports reads from fixed ROM address ranges.
-- [x] **CART-05**: Non-ROM-only cartridge types are parsed far enough to report their type, then return `UnsupportedCartridgeType` until MBC support is added.
+- [x] **CART-05**: Known Game Boy cartridge type codes are recognized as metadata so ROM files can load for inspection, while unknown type codes return `UnsupportedCartridgeType` and MBC runtime behavior remains deferred.
 
 ### Bus
 
@@ -77,9 +77,11 @@ Deferred to future release. Tracked but not in current roadmap.
 
 ### Cartridge Expansion
 
-- **MBC-01**: Emulator can run MBC1 ROMs.
-- **MBC-02**: Emulator can run MBC3 ROMs with RAM behavior.
-- **MBC-03**: Emulator can run MBC5 ROMs.
+- **MBC-01**: Emulator can run MBC1 ROMs with ROM banking and external RAM behavior.
+- **MBC-02**: Emulator can run MBC2 ROMs with built-in RAM behavior.
+- **MBC-03**: Emulator can run MBC3 ROMs with RAM behavior, then RTC behavior once normal banking is reliable.
+- **MBC-04**: Emulator can run MBC5 ROMs, with rumble treated as an optional compatibility extension.
+- **MBC-05**: Emulator can classify specialty cartridge families such as MBC6, MBC7, Pocket Camera, Bandai Tama5, HuC3, and HuC1 while deferring their device-specific hardware behavior until targeted compatibility work.
 - **SAVE-01**: Emulator can persist and reload battery-backed external RAM.
 
 ### Audio and Host
@@ -102,7 +104,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | Full pixel rendering in v1 | PPU mode/access correctness should land before visual output |
 | Audio output in v1 | APU is timing-sensitive and should follow CPU/bus/timer stability |
 | Desktop UI in v1 | Core correctness and automated validation matter before host polish |
-| Broad MBC support in v1 | Start with ROM-only cartridge behavior, then expand once Bus and cartridge boundaries are proven |
+| Broad MBC runtime support in v1 | v1 recognizes known cartridge type metadata for loadability, but bank switching, external RAM, battery persistence, RTC, rumble, sensors, and specialty hardware should follow once CPU/Bus validation is stable |
 | Cycle-perfect completion for every subsystem | v1 establishes architecture and selected verified behavior; later phases tighten compatibility |
 
 ## Traceability
