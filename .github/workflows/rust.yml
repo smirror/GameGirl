@@ -47,3 +47,19 @@ jobs:
 
       - name: Run tests
         run: cargo test --verbose
+
+      - name: Verify ROM loading
+        run: |
+          cargo build
+          failed=0
+          while read -r rom; do
+            echo "Verifying $rom..."
+            if ! ./target/debug/game_girl "$rom"; then
+              echo "Error: Failed to load $rom"
+              failed=$((failed + 1))
+            fi
+          done < <(find roms -name "*.gb" -o -name "*.gbc")
+          if [ $failed -ne 0 ]; then
+            echo "$failed ROMs failed to load"
+            exit 1
+          fi
