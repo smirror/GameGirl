@@ -7,8 +7,8 @@ current_phase_name: cartridge-header-and-mapper-boundary
 current_plan: Not started
 status: ready_to_plan
 stopped_at: Completed 02-05-PLAN.md
-last_updated: "2026-05-02T05:30:25.695Z"
-last_activity: 2026-05-02 -- v1.1 plan granularity expanded and implementation spec added
+last_updated: "2026-05-02T05:50:18Z"
+last_activity: 2026-05-02 - Completed quick task 260502-kf6: Refactor CPU readability, split tests, centralize memory map constants, and clean ROM loading API
 progress:
   total_phases: 5
   completed_phases: 0
@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-05-02)
 Phase: 6 (cartridge-header-and-mapper-boundary) — READY TO PLAN
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-05-02 -- v1.1 plan granularity expanded and implementation spec added
+Last activity: 2026-05-02 - Completed quick task 260502-kf6: Refactor CPU readability, split tests, centralize memory map constants, and clean ROM loading API
 
 ## Performance Metrics
 
@@ -76,6 +76,7 @@ None yet.
 | 260502-gih | Incorporate roadmap feedback: insert early minimal serial ROM validation harness, narrow CPU phase scope, and clarify ROM-only/MBC and post-boot assumptions | 2026-05-02 | docs-only | [260502-gih-incorporate-roadmap-feedback-insert-earl](./quick/260502-gih-incorporate-roadmap-feedback-insert-earl/) |
 | 260502-id3 | Fix ROM loading verification script and CI failure for cartridge type coverage | 2026-05-02 | working-tree | [260502-id3-fix-rom-loading-verification-script-and-](./quick/260502-id3-fix-rom-loading-verification-script-and-/) |
 | 260502-ipc | Update roadmap for known cartridge type recognition and staged MBC support | 2026-05-02 | working-tree | [260502-ipc-update-roadmap-for-known-cartridge-type-](./quick/260502-ipc-update-roadmap-for-known-cartridge-type-/) |
+| 260502-kf6 | Refactor CPU readability, split tests, centralize memory map constants, and clean ROM loading API | 2026-05-02 | 345b1a2 | [260502-kf6-refactor-cpu-readability-split-tests-cen](./quick/260502-kf6-refactor-cpu-readability-split-tests-cen/) |
 
 ## Deferred Items
 
