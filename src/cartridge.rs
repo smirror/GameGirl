@@ -34,6 +34,20 @@ impl Cartridge {
     pub fn rom_len(&self) -> usize {
         self.rom.len()
     }
+
+    pub fn read_rom(&self, address: u16) -> u8 {
+        let address = usize::from(address);
+
+        if address > 0x7FFF {
+            return 0xFF;
+        }
+
+        self.rom.get(address).copied().unwrap_or(0xFF)
+    }
+
+    pub fn write_rom(&mut self, _address: u16, _value: u8) {
+        // ROM-only cartridges do not mutate ROM bytes on writes.
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -212,6 +226,10 @@ mod tests {
         vec![0; MIN_CARTRIDGE_HEADER_LEN]
     }
 
+    fn full_rom_bytes() -> Vec<u8> {
+        vec![0; 0x8000]
+    }
+
     #[test]
     fn rejects_rom_shorter_than_header() {
         let bytes = vec![0; MIN_CARTRIDGE_HEADER_LEN - 1];
@@ -283,5 +301,58 @@ mod tests {
             Err(CartridgeError::UnsupportedRamSize(0xFF)) => {}
             other => panic!("expected unsupported RAM size, got {other:?}"),
         }
+    }
+
+    #[test]
+    fn parses_header_title_entry_and_size_metadata() {
+        let mut bytes = rom_bytes();
+        bytes[ENTRY_POINT_RANGE].copy_from_slice(&[0x00, 0xC3, 0x50, 0x01]);
+        bytes[0x0134..0x013C].copy_from_slice(b"GAMEGIRL");
+        bytes[ROM_SIZE_OFFSET] = 0x02;
+        bytes[RAM_SIZE_OFFSET] = 0x03;
+        bytes[HEADER_CHECKSUM_OFFSET] = 0x42;
+        bytes[GLOBAL_CHECKSUM_RANGE].copy_from_slice(&[0x12, 0x34]);
+
+        let cartridge = Cartridge::from_bytes(bytes).expect("valid ROM-only cartridge");
+
+        assert_eq!(cartridge.header.title, "GAMEGIRL");
+        assert_eq!(cartridge.header.cartridge_type, CartridgeType::RomOnly);
+        assert_eq!(cartridge.header.cartridge_type_code, 0x00);
+        assert_eq!(cartridge.header.rom_size_code, 0x02);
+        assert_eq!(cartridge.header.rom_size, 128 * 1024);
+        assert_eq!(cartridge.header.ram_size_code, 0x03);
+        assert_eq!(cartridge.header.ram_size, 32 * 1024);
+        assert_eq!(cartridge.header.entry_point, [0x00, 0xC3, 0x50, 0x01]);
+        assert_eq!(cartridge.header.header_checksum, 0x42);
+        assert_eq!(cartridge.header.global_checksum, 0x1234);
+    }
+
+    #[test]
+    fn rom_only_reads_fixed_rom_range() {
+        let mut bytes = full_rom_bytes();
+        bytes[0x0000] = 0xAA;
+        bytes[0x7FFF] = 0xBB;
+        let cartridge = Cartridge::from_bytes(bytes).expect("valid ROM-only cartridge");
+
+        assert_eq!(cartridge.read_rom(0x0000), 0xAA);
+        assert_eq!(cartridge.read_rom(0x7FFF), 0xBB);
+    }
+
+    #[test]
+    fn rom_only_reads_missing_fixture_bytes_as_ff() {
+        let cartridge = Cartridge::from_bytes(rom_bytes()).expect("valid ROM-only cartridge");
+
+        assert_eq!(cartridge.read_rom(0x4000), 0xFF);
+    }
+
+    #[test]
+    fn rom_only_writes_do_not_mutate_rom() {
+        let mut bytes = full_rom_bytes();
+        bytes[0x0000] = 0xAA;
+        let mut cartridge = Cartridge::from_bytes(bytes).expect("valid ROM-only cartridge");
+
+        cartridge.write_rom(0x0000, 0x99);
+
+        assert_eq!(cartridge.read_rom(0x0000), 0xAA);
     }
 }
